@@ -1,21 +1,22 @@
-getmyancestors
+printVeryLargeTextPedigrees
 ==============
 
-_getmyancestors_ is a python3 package that downloads family trees in GEDCOM format from FamilySearch.
+_printVeryLargeTextPedigrees_ is a python3 package that downloads ancestors of a targeted individual from FamilySearch and creates html, txt or PDF pedigree files. It is meant to show up to 200 generations. The html version allows collasping and expanding of any branches. To conserve apace, repeated individuals are indicated as such, and in the html version, provides a link to the first occurance.
 
-This program is now in production phase, but bugs might still be present. Features will be added on request. It is provided as is.
+This program is in the development phase, it is currently a work in progress, and bugs might be present. Features will be added on request. It is provided as is.
 
-The project is maintained at https://github.com/Linekio/getmyancestors. Visit here for the latest version and more information.
+The project is maintained at https://github.com/mmgroat/printVeryLargeTextPedigrees. Visit here for the latest version and more information.
 
 This script requires python3 and the modules indicated in the requirements.txt file. To install the modules, run in your terminal:
 
+(Right now, invoke the script directly through command line, working on getting packaging to work: C:\python3 -m printVeryLargeTextPedigrees <options>)
 
 Installation
 ============
 
-The easiest way to install _getmyancestors_ is to use pip:
+The easiest way to install _printVeryLargeTextPedigrees__ is to use pip:
 
-`pip install getmyancestors`
+`pip install printVeryLargeTextPedigrees`
 
 Otherwise, you can download the source package and then execute:
 
@@ -84,11 +85,11 @@ mergemyancestors -i file1.ged file2.ged -o out.ged
 Support
 =======
 
-Submit questions or suggestions, or feature requests by opening an Issue at https://github.com/Linekio/getmyancestors/issues
+Submit questions or suggestions, or feature requests by opening an Issue at https://github.com/mmgroat/printVeryLargeTextPedigrees/issues
 
 Donation
 ========
 
-If this project help you, you can give me a tip :)
+If this project helps you, you can give me a tip :)
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=98X3CY93XTAYJ)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?business=YLBFKLXCCKRH6&no_recurring=0&item_name=printVeryLargeTextPedigrees+-+Donations+are+appreciated%21&currency_code=USD)
