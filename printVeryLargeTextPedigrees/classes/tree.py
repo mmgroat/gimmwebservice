@@ -869,3 +869,29 @@ class Tree:
                     continue
             n.print(file)
         file.write("0 TRLR\n")
+        
+    def printPedigree(self, file=sys.stdout, targetid):
+        """print pedigree chart from tree objet"""
+        file.write("<HTML>")
+        file.write("<HEAD>")
+        file.write("<H1>Ancestors of self.indi[targetid].name<H1>")
+        level = 0
+        linenumber = 0
+        printIndividualPedigree(self, file, targetid, level, linenumber)
+        
+    def printIndividualPedrigree(self, file, targetid, level, top):
+        """print an Individual line in the output file"""
+        if(targetid is null) return
+        
+        level += 1
+        printIndividualPedrigree(self, file, self.indi[targetid].parents[0][0],1)
+        linenumber += 1
+        if (level == 1)
+        print linenumber
+        print pedigree_indent()
+        print level
+        print (indi[targetid].name)
+        printIndividualPedigree(self, file, self.indi[targetid].parents[0][1], 0)
+    
+    def pedigree_indent():
+        return "       "
