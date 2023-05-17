@@ -131,7 +131,7 @@ class Session:
             self.write_log("Status code: %s" % r.status_code)
             if r.status_code == 204:
                 return None
-            if r.status_code in {404, 405, 410, 500}:
+            if r.status_code in {400, 404, 405, 410, 500}:
                 self.write_log("WARNING: " + url)
                 return None
             if r.status_code == 401:
@@ -143,6 +143,7 @@ class Session:
                 self.write_log("HTTPError")
                 if r.status_code == 403:
                     if (
+                        "errors" in r.json()
                         "message" in r.json()["errors"][0]
                         and r.json()["errors"][0]["message"]
                         == "Unable to get ordinances."

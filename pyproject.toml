@@ -1,10 +1,10 @@
 [project]
-name = "getmyancestors"
-description = "Retrieve GEDCOM data from FamilySearch Tree"
+name = "printVeryLargeTextPedigrees"
+description = "Create html,txt,pdfs text of large pedigrees from FamilySearch Tree"
 requires-python = ">=3.7"
 license = {text = "GNU"}
 keywords = [
-  "getmyancestors",
+  "printverylargetextpedigrees",
   "familysearch",
   "fstogedcom",
   "gedcom",
@@ -28,13 +28,13 @@ version = {attr = "getmyancestors.__version__"}
 readme = {file = ["README.md"]}
 
 [project.urls]
-HomePage = "https://github.com/Linekio/getmyancestors"
+HomePage = "https://github.com/mmgroat/printVeryLargeTextPedigrees"
 
 [tool.setuptools.package-data]
-getmyancestors = ["fstogedcom.png"]
+printverylargetextpedigrees = ["fstogedcom.png"]
 
 [project.scripts]
-getmyancestors = "getmyancestors.getmyancestors:main"
+printverylargetextpedigrees = "printverylargetextpedigrees.printverylargetextpedigrees:main"
 mergemyancestors = "getmyancestors.mergemyancestors:main"
 fstogedcom = "getmyancestors.fstogedcom:main"
 

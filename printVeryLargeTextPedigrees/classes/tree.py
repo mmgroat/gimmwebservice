@@ -497,6 +497,16 @@ class Indi:
             if quote:
                 file.write(cont("2 PAGE " + quote))
 
+    def printPedigree(self, level, linenumber):
+        print linenumber
+        if (level == 1):
+            print "Beginning"
+        print pedigree_indent(parity)
+        print level
+        print self.name
+
+    def pedigree_indent(parity):
+        return "       "
 
 class Fam:
     """GEDCOM family class
@@ -877,21 +887,18 @@ class Tree:
         file.write("<H1>Ancestors of self.indi[targetid].name<H1>")
         level = 0
         linenumber = 0
-        printIndividualPedigree(self, file, targetid, level, linenumber)
+        printPedigreeRecursive(self, file, targetid, level, linenumber)
         
-    def printIndividualPedrigree(self, file, targetid, level, top):
+    def printPedigreeRecursive(self, file, targetid, level, linenumber, topOrBottom=1):
         """print an Individual line in the output file"""
-        if(targetid is null) return
+        
+        (mother,father) = self.indi[targetid].paraents
         
         level += 1
-        printIndividualPedrigree(self, file, self.indi[targetid].parents[0][0],1)
+        if father:
+            self.printPedrigreeRecursive(self, file, father, 1)
         linenumber += 1
-        if (level == 1)
-        print linenumber
-        print pedigree_indent()
-        print level
-        print (indi[targetid].name)
-        printIndividualPedigree(self, file, self.indi[targetid].parents[0][1], 0)
-    
-    def pedigree_indent():
-        return "       "
+        self.indi[targetid].printPedigree(level, linenumber, topOrBottom)
+        if mother:
+            self.printPedrigreeRecursive(self, file, mother, 0)
+
