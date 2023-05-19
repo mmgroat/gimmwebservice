@@ -11,8 +11,8 @@ import asyncio
 import argparse
 
 # local imports
-from getmyancestors.classes.tree import Tree
-from getmyancestors.classes.session import Session
+from classes.tree import Tree
+from classes.session import Session
 
 
 def main():
@@ -105,7 +105,7 @@ def main():
             "--outfile",
             metavar="<FILE>",
             type=argparse.FileType("w", encoding="UTF-8"),
-            default=sys.stdout,
+            default="GedCom.ged",
             help="output GEDCOM file [stdout]",
         )
         parser.add_argument(
@@ -115,6 +115,14 @@ def main():
             type=argparse.FileType("w", encoding="UTF-8"),
             default=False,
             help="output log file [stderr]",
+        )
+        parser.add_argument(
+            "-po",
+            "--pedigreeoutfile",
+            metavar="<FILE>",
+            type=argparse.FileType("w", encoding="UTF-8"),
+            default=sys.stdout,
+            help="output pedigree file [stdout]",
         )
     except TypeError:
         sys.stderr.write("Python >= 3.4 is required to run this script\n")
@@ -274,6 +282,7 @@ def main():
             ),
             file=sys.stderr,
         )
+        tree.print_pedigree(args.pedigreeoutfile, args.individuals[0])
 
 
 if __name__ == "__main__":

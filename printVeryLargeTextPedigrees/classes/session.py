@@ -144,7 +144,7 @@ class Session:
                 if r.status_code == 403:
                     if (
                         "errors" in r.json()
-                        "message" in r.json()["errors"][0]
+                        and "message" in r.json()["errors"][0]
                         and r.json()["errors"][0]["message"]
                         == "Unable to get ordinances."
                     ):

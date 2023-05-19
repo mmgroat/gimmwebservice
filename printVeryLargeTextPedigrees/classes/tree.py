@@ -8,8 +8,8 @@ from urllib.parse import unquote
 import babelfish
 
 # local imports
-import getmyancestors
-from getmyancestors.classes.constants import (
+#import printverylargetextpedigrees
+from classes.constants import (
     MAX_PERSONS,
     FACT_EVEN,
     FACT_TAGS,
@@ -248,6 +248,17 @@ class Name:
             file.write("2 NPFX %s\n" % self.prefix)
         if self.note:
             self.note.link(file, 2)
+
+    def pretty_print(self, file=sys.stdout):
+        """print a presentation ready name
+        :param typ: type for additional names
+        """
+        tmp = "%s %s" % (self.given, self.surname)
+        if self.suffix:
+            tmp += " " + self.suffix
+        if self.prefix:
+            tmp = self.prefix + " " + tmp
+        file.write(tmp)
 
 
 class Ordinance:
@@ -497,16 +508,36 @@ class Indi:
             if quote:
                 file.write(cont("2 PAGE " + quote))
 
-    def printPedigree(self, level, linenumber):
-        print linenumber
-        if (level == 1):
-            print "Beginning"
-        print pedigree_indent(parity)
-        print level
-        print self.name
+    def print_pedigree(self, file, level, linenumber, topOrBottom, parities):
+        #file.write(str(linenumber))
+        file.write(self.pedigree_indent(file, level, parities))
+        if level != 0:
+            if (topOrBottom == 1):
+                file.write("/")
+            else:
+                file.write("\\")
+            file.write("------")
+            file.write(" " + str(level + 1) + " ")
+        else:
+            file.write(str(level + 1) + " ")
+        self.name.pretty_print(file)
+        file.write("\n")
 
-    def pedigree_indent(parity):
-        return "       "
+    def pedigree_indent(self, file, level, parities):
+        # TODO Parity
+        tmp = "     "
+        #file.write("parities is " + str(parities) + "\n")
+        for x in range(level - 1):
+            tmp1 = 1 << x
+            tmp2 = 1 << x + 1
+            p = (~0) if (parities & tmp1) else 0
+            q = (~0) if (parities & tmp2) else 0
+            if (p ^ q):
+                tmp += '|'
+            else:
+                tmp += ' '
+            tmp += '       '
+        return tmp
 
 class Fam:
     """GEDCOM family class
@@ -848,16 +879,17 @@ class Tree:
                 self.fam[(husb, wife)].num for husb, wife in self.indi[fid].fams_fid
             )
 
-    def print(self, file=sys.stdout):
+    def print(self, file):
         """print family tree in GEDCOM format"""
         file.write("0 HEAD\n")
         file.write("1 CHAR UTF-8\n")
         file.write("1 GEDC\n")
         file.write("2 VERS 5.1.1\n")
         file.write("2 FORM LINEAGE-LINKED\n")
-        file.write("1 SOUR getmyancestors\n")
-        file.write("2 VERS %s\n" % getmyancestors.__version__)
-        file.write("2 NAME getmyancestors\n")
+        file.write("1 SOUR printverylargetextpedigrees\n")
+        #file.write("2 VERS %s\n" % printverylargetextpedigrees.__version__)
+        file.write("2 VERS 0.0.1\n")
+        file.write("2 NAME printverylargetextpedigrees\n")
         file.write("1 DATE %s\n" % time.strftime("%d %b %Y"))
         file.write("2 TIME %s\n" % time.strftime("%H:%M:%S"))
         file.write("1 SUBM @SUBM@\n")
@@ -880,25 +912,33 @@ class Tree:
             n.print(file)
         file.write("0 TRLR\n")
         
-    def printPedigree(self, file=sys.stdout, targetid):
+    def print_pedigree(self, file, targetid):
         """print pedigree chart from tree objet"""
-        file.write("<HTML>")
-        file.write("<HEAD>")
-        file.write("<H1>Ancestors of self.indi[targetid].name<H1>")
-        level = 0
-        linenumber = 0
-        printPedigreeRecursive(self, file, targetid, level, linenumber)
+        file.write("<HTML>\n")
+        file.write("<HEAD>\n")
+        file.write("<H1>Ancestors of ")
+        self.indi[targetid].name.pretty_print(file)
+        file.write("<H1>\n")
+        self.print_pedigree_recursive(file, targetid, -1, 0, 0, 0)
         
-    def printPedigreeRecursive(self, file, targetid, level, linenumber, topOrBottom=1):
-        """print an Individual line in the output file"""
-        
-        (mother,father) = self.indi[targetid].paraents
-        
+    def print_pedigree_recursive(self, file, targetid, level, linenumber, topOrBottom, parities) -> int:
+        """recurse through tree, printing Individuals"""
+        if targetid not in self.indi:
+            return linenumber
+        mother = None
+        father = None
         level += 1
+        if self.indi[targetid].parents:
+            father, mother = list(self.indi[targetid].parents)[0] # get perferred parents
         if father:
-            self.printPedrigreeRecursive(self, file, father, 1)
+            linenumber = self.print_pedigree_recursive(file, father, level, linenumber, 1, parities)
+        #file.write("\nparities is: " + str(parities) + "\n")
         linenumber += 1
-        self.indi[targetid].printPedigree(level, linenumber, topOrBottom)
+        self.indi[targetid].print_pedigree(file, level, linenumber, topOrBottom, parities)
         if mother:
-            self.printPedrigreeRecursive(self, file, mother, 0)
+        #    file.write("\nparities 3 is: " + str(parities) + "\n")
+        #    file.write("level is " + str(level))
+        #    file.write("Parities is " + str(parities|(1<<level)) + "\n")
+            linenumber = self.print_pedigree_recursive(file, mother, level, linenumber, 0, parities|(1<<level))
+        return linenumber
 
