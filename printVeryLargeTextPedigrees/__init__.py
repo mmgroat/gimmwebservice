@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from . import getmyancestors
-from . import mergemyancestors
+#from . import printverylargetextpedigrees
+#from . import mergemyancestors
 
 __version__ = "1.0.3"

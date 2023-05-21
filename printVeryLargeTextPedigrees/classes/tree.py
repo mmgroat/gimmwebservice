@@ -249,16 +249,18 @@ class Name:
         if self.note:
             self.note.link(file, 2)
 
-    def pretty_print(self, file=sys.stdout):
+    def pretty_print(self) -> str:
         """print a presentation ready name
         :param typ: type for additional names
         """
-        tmp = "%s %s" % (self.given, self.surname)
+        tmp = self.surname
+        if self.given:
+            tmp = self.given + " " + tmp
         if self.suffix:
             tmp += " " + self.suffix
         if self.prefix:
             tmp = self.prefix + " " + tmp
-        file.write(tmp)
+        return tmp
 
 
 class Ordinance:
@@ -508,10 +510,10 @@ class Indi:
             if quote:
                 file.write(cont("2 PAGE " + quote))
 
-    def print_pedigree(self, file, level, linenumber, topOrBottom, parities):
+    def print_pedigree(self, file, level, linenumber, topOrBottom, parities, has_appeared):
         #file.write(str(linenumber))
-        file.write(self.pedigree_indent(file, level, parities))
         if level != 0:
+            file.write(self.pedigree_indent(file, level, parities))
             if (topOrBottom == 1):
                 file.write("/")
             else:
@@ -519,11 +521,31 @@ class Indi:
             file.write("------")
             file.write(" " + str(level + 1) + " ")
         else:
-            file.write(str(level + 1) + " ")
-        self.name.pretty_print(file)
+            file.write("  -- " + str(level + 1) + " ")
+        file.write(self.name.pretty_print())
+        if (has_appeared):
+            file.write(" (Individual has previously appeared)")
         file.write("\n")
 
-    def pedigree_indent(self, file, level, parities):
+    def print_pedigree_html(self, level, linenumber, topOrBottom, parities, has_appeared) -> (int, str):
+        output = ""
+        if level != 0:
+            output += self.pedigree_indent(level, parities)
+            if (topOrBottom == 1):
+                output += "/"
+            else:
+                output += "\\"
+            output += "------"
+            output += " " + str(level + 1) + " "
+        else:
+            output += "  -- " + str(level + 1) + " "
+        output += self.name.pretty_print()
+        if (has_appeared):
+            output += " (Individual has previously appeared, click here)"
+        output += "\n"
+        return (linenumber, output)
+
+    def pedigree_indent(self, level, parities):
         # TODO Parity
         tmp = "     "
         #file.write("parities is " + str(parities) + "\n")
@@ -879,6 +901,22 @@ class Tree:
                 self.fam[(husb, wife)].num for husb, wife in self.indi[fid].fams_fid
             )
 
+    def reset_num_no_fid(self):
+        """reset all GEDCOM identifiers"""
+        for husb, wife in self.fam:
+            self.fam[(husb, wife)].husb_num = self.indi[husb].num if husb else None
+            self.fam[(husb, wife)].wife_num = self.indi[wife].num if wife else None
+            self.fam[(husb, wife)].chil_num = set(
+                self.indi[chil].num for chil in self.fam[(husb, wife)].chil_num
+            )
+        for num in self.indi:
+            self.indi[num].famc_num = set(
+                self.fam[(husb, wife)].num for husb, wife in self.indi[num].famc_num
+            )
+            self.indi[num].fams_num = set(
+                self.fam[(husb, wife)].num for husb, wife in self.indi[num].fams_num
+            )
+
     def print(self, file):
         """print family tree in GEDCOM format"""
         file.write("0 HEAD\n")
@@ -913,32 +951,81 @@ class Tree:
         file.write("0 TRLR\n")
         
     def print_pedigree(self, file, targetid):
-        """print pedigree chart from tree objet"""
-        file.write("<HTML>\n")
-        file.write("<HEAD>\n")
-        file.write("<H1>Ancestors of ")
-        self.indi[targetid].name.pretty_print(file)
-        file.write("<H1>\n")
-        self.print_pedigree_recursive(file, targetid, -1, 0, 0, 0)
-        
-    def print_pedigree_recursive(self, file, targetid, level, linenumber, topOrBottom, parities) -> int:
-        """recurse through tree, printing Individuals"""
-        if targetid not in self.indi:
+        """print pedigree chart in text from tree objet"""
+
+        def print_pedigree_recursive(file, targetid, level, linenumber, topOrBottom, parities) -> int:
+            """recurse through tree, printing Individuals"""
+            if targetid not in self.indi:
+                return linenumber
+            has_appeared = targetid in appeared_in_pedigree
+            appeared_in_pedigree.add(targetid)
+            mother = None
+            father = None
+            level += 1
+            if self.indi[targetid].parents:
+                father, mother = list(self.indi[targetid].parents)[0] # get perferred parents
+            if father and not has_appeared:
+                linenumber = print_pedigree_recursive(file, father, level, linenumber, 1, parities)
+            linenumber += 1
+            self.indi[targetid].print_pedigree(file, level, linenumber, topOrBottom, parities, has_appeared)
+            if mother and not has_appeared:
+                linenumber = print_pedigree_recursive(file, mother, level, linenumber, 0, parities|(1<<level))
             return linenumber
-        mother = None
-        father = None
-        level += 1
-        if self.indi[targetid].parents:
-            father, mother = list(self.indi[targetid].parents)[0] # get perferred parents
-        if father:
-            linenumber = self.print_pedigree_recursive(file, father, level, linenumber, 1, parities)
-        #file.write("\nparities is: " + str(parities) + "\n")
-        linenumber += 1
-        self.indi[targetid].print_pedigree(file, level, linenumber, topOrBottom, parities)
-        if mother:
-        #    file.write("\nparities 3 is: " + str(parities) + "\n")
-        #    file.write("level is " + str(level))
-        #    file.write("Parities is " + str(parities|(1<<level)) + "\n")
-            linenumber = self.print_pedigree_recursive(file, mother, level, linenumber, 0, parities|(1<<level))
-        return linenumber
+
+        file.write("\n\n\n")
+        file.write("  Ancestors of ")
+        self.indi[targetid].name.pretty_print(file)
+        file.write("\n\n")
+        appeared_in_pedigree = set()
+        print_pedigree_recursive(file, targetid, -1, 0, 0, 0)
+        appeared_in_pedigree.clear()
+        
+    def print_pedigree_html(self, targetid) -> str:
+        """print pedigree chart in html from tree objet"""
+    
+        def print_pedigree_recursive_html(targetid, level, linenumber, topOrBottom, parities) -> (int, str):
+            """recurse through tree, printing Individuals"""
+            output = ""
+            if targetid not in self.indi:
+                return (linenumber, "")
+            has_appeared = targetid in appeared_in_pedigree
+            appeared_in_pedigree.add(targetid)
+            mother = None
+            father = None
+            level += 1
+            if self.indi[targetid].parents:
+                father, mother = list(self.indi[targetid].parents)[0] # get perferred parents
+            if father and not has_appeared:
+                linenumber, fatheroutput = print_pedigree_recursive_html(father, level, linenumber, 1, parities)
+                output += fatheroutput
+            linenumber += 1
+            linenumber, selfoutput = self.indi[targetid].print_pedigree_html(level, linenumber, topOrBottom, parities, has_appeared)
+            output += selfoutput
+            if mother and not has_appeared:
+                linenumber, motheroutput = print_pedigree_recursive_html(mother, level, linenumber, 0, parities|(1<<level))
+                output += motheroutput
+            return (linenumber, output)
+
+        output = ""
+        output += "<HTML lang=\"en\">\n"
+        output += "<HEAD>\n"
+        output += "<meta charset=\"UTF-8\">\n"
+        output += "<title>Michael Groat's Genealogical Database</title>\n"
+        output += "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n"
+        output += "<body>\n"
+        output += "<center><h1>Michael Groat's Genealogical Database</h1></center>\n"
+        output += "<HR><BR><pre>\n"
+        output += "  Ancestors of "
+        output += self.indi[targetid].name.pretty_print()
+        output += "<BR><BR>"
+        appeared_in_pedigree = set()
+        linenumber, recursiveoutput = print_pedigree_recursive_html(targetid, -1, 0, 0, 0)
+        appeared_in_pedigree.clear()
+        output += recursiveoutput
+        output += "<BR>\n"
+        output += "</PRE>\n"
+        output += "</body>\n"
+        output += "</html>\n"
+        return output
+        
 

@@ -1,5 +1,6 @@
 # mergemyancestors classes
-from getmyancestors.classes.tree import (
+#from printverylargetextpedigrees.classes.tree import (
+from classes.tree import (
     Indi,
     Fact,
     Fam,
@@ -9,8 +10,8 @@ from getmyancestors.classes.tree import (
     Ordinance,
     Source,
 )
-from getmyancestors.classes.constants import FACT_TYPES, ORDINANCES
-
+#from printverylargetextpedigrees.classes.constants import FACT_TYPES, ORDINANCES
+from classes.constants import FACT_TYPES, ORDINANCES
 
 class Gedcom:
     """Parse a GEDCOM file into a Tree"""
@@ -151,8 +152,11 @@ class Gedcom:
         name = Name()
         added = False
         name.given = parts[0].strip()
-        name.surname = parts[1].strip()
-        if parts[2]:
+        if len(parts) > 1:
+            name.surname = parts[1].strip()
+        else: 
+            name.surname = ""
+        if len(parts) > 2:
             name.suffix = parts[2]
         if not self.indi[self.num].name:
             self.indi[self.num].name = name
@@ -206,7 +210,8 @@ class Gedcom:
             elif self.tag == "CONT":
                 fact.value += "\n" + self.data
             elif self.tag == "CONC":
-                fact.value += self.data
+                if self.data is not None and fact.value is not None:
+                    fact.value += self.data
         self.flag = True
         return fact
 
@@ -251,7 +256,10 @@ class Gedcom:
                 else:
                     self.tree.sources[self.data] = self.sour[self.num]
             elif self.tag == "NOTE":
-                num = int(self.data[2 : len(self.data) - 1])
+                try:
+                    num = int(self.data[2 : len(self.data) - 1])
+                except ValueError:
+                    continue
                 if num not in self.note:
                     self.note[num] = Note(tree=self.tree, num=num)
                 self.sour[self.num].notes.add(self.note[num])
@@ -259,7 +267,10 @@ class Gedcom:
 
     def __get_link_source(self):
         """Parse a link to a source"""
-        num = int(self.data[2 : len(self.data) - 1])
+        try:
+            num = int(self.data[2 : len(self.data) - 1])
+        except ValueError:
+            return None
         if num not in self.sour:
             self.sour[num] = Source(num=num)
         page = None

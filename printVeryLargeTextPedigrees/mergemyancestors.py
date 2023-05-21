@@ -8,8 +8,8 @@ import sys
 import argparse
 
 # local imports
-from getmyancestors.classes.tree import Indi, Fam, Tree
-from getmyancestors.classes.gedcom import Gedcom
+from printverylargetextpedigrees.classes.tree import Indi, Fam, Tree
+from printverylargetextpedigrees.classes.gedcom import Gedcom
 
 sys.path.append(os.path.dirname(sys.argv[0]))
 

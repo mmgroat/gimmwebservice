@@ -1,3 +1,3 @@
-from getmyancestors import getmyancestors
+#from getmyancestors import getmyancestors
 
-getmyancestors.main()
+#getmyancestors.main()
