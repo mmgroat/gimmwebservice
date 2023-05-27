@@ -14,11 +14,11 @@ Advantages of GIMM
 
 Usage
 =======
-* &lt;location where the repo was downloaded&gt;/python3 gimmwebservice.py -g &lt;relative or absolute path and filename of GEDCOM&gt;
-* for example: C:/Code/gimmwebservice/gimmwebservice/python3 gimmwebservice -g ../../personaldata/mygedcom.ged
-* You may need to install libraries (TODO to package this repo to elivated this) with pip: pip install flask
+* &lt;derp>location where the repo was downloaded&gt;derp>/python3 gimmwebservice.py -g &lt;derp>relative or absolute path and filename of GEDCOM&gt;derp>
+* for example: C:/Code/gimmwebservice/gimmwebservice/python3 gimmwebservice.py -g ../../personaldata/mygedcom.ged
+* You may need to install IIS, python, and python libraries (for example pip install flask).(TODO In the future I entend to package this repo, elivating this.)
 * This script requires python3 and the modules indicated in the requirements.txt file. To install the modules, run in your terminal:
-* Assumes indiviual 1 is in the GEDOM as @I1@. Individual 1 is used as the database owner (TODO - need the database owner's email)
+* This program assumes indiviual 1 is in the GEDOM as @I1@. Individual 1 is used as the database owner (TODO - need the database owner's email)
 
 Future Work
 =======
@@ -47,26 +47,36 @@ Otherwise, you can download the source package and then execute:
 
 (TODO) `python3 setup.py install`
 
-(CURRENTLY) download the source package, navigate to the gimmwebservice directory and run python3 gimmwebservice.py -g &lt;location and name of GEDCOM&gt;
+(CURRENTLY) download the source package, navigate to the gimmwebservice directory and run python3 gimmwebservice.py -g &lt;derp>location and name of GEDCOM&gt;derp>
 Then point your browser to http://127.0.0.1:5000/
 Currenlty the only working URL is http://127.0.0.1:5000/individual/1/pedigree (To pull the pedigree chart of the first individual)
 
 Webservice Endpoints:
 ==========
 (Main index)
+
 http://127.0.0.1:5000/ 
+
 http://127.0.0.1:5000/individual
+
 http://127.0.0.1:5000/individuals
+
 http://127.0.0.1:5000/index
 
-(Pedigree chart of individual &lt;id&gt;)
-http://127.0.0.1:5000/individual/&lt;id&gt;/pedigree
 
-(Individual sheet of individual &lt;id&gt;)
-http://127.0.0.1:5000/individual/&lt;id&gt;
 
-(Desendency chart of individual &lt;id&gt;)
-http://127.0.0.1:5000/individual/&lt;id&gt;/descendents
+(Pedigree chart of individual &lt;derp>id&gt;derp>)
+
+http://127.0.0.1:5000/individual/&lt;derp>id&gt;derp>/pedigree
+
+
+(Individual sheet of individual &lt;derp>id&gt;derp>)
+
+http://127.0.0.1:5000/individual/<id>
+
+(Desendency chart of individual &lt;derp>id&gt;derp>)
+
+http://127.0.0.1:5000/individual/<id>/descendents
 
 Copyrights:
 =======
