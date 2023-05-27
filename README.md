@@ -1,6 +1,5 @@
 gimmwebservice - GIMM (Gedcom in Memory Method) Web Service
-==============
-
+=======
 _gimmwebservice_  is a python3 package that serves genealogy html pages (pedigree and descendency charts, individual sheets) from a GEDCOM on your local file system. It is designed to support and run quickly on a  GECOMM with hundreds of thousands of people. Tell the program where your GEDCOM is located, run it, then point your browser to http://127.0.0.1:5000 (TODO - see if IIS needs to be installed)
 
 Advantages of GIMM:
@@ -18,20 +17,16 @@ Usage:
 * This script requires python3 and the modules indicated in the requirements.txt file. To install the modules, run in your terminal:
 * Assumes indiviual 1 is in the GEDOM as @I1@. Individual 1 is used as the database owner (TODO - need the database owner's email)
 
-Future (TODO) work:
+Future Work:
 =======
 * This program is in the development phase, it is currently a work in progress, and bugs might be present. Features will be added on request. It is provided as is.
 * As of 5/27/23, this still needs descendency charts, but pedigree charts are working and are almost complete
 * Need to turn it into a package.
 * The project is maintained at https://github.com/mmgroat/gimmwebservice. Visit here for the latest version and more information.
 
-Copyrights:
-=======
-* Copyrighted material from the Indexed Gedcom Method (IGM) is the indent subroutine on the pedigree chart. 
-* GIMM copyrighted 2023 by Michael Groat and licensed under a GNU GPL.
-
 Support:
-* Submit questions or suggestions, or feature requests by opening an Issue at https://github.com/mmgroat/printVeryLargeTextPedigrees/issues
+=======
+* Submit questions or suggestions, or feature requests by opening an Issue at https://github.com/mmgroat/gimmwebservice/issues
 
 Donations
 ========
@@ -40,7 +35,7 @@ If this project helps you, you can give me a tip :) Or if you want donate to hel
 
 Installation
 ============
-The easiest way to install _gimmwebservices__ is to use pip:
+The easiest way to install _gimmwebservices__ is to use pip (TODO):
 
 (TODO) `pip install printVeryLargeTextPedigrees`
 
@@ -52,7 +47,7 @@ Otherwise, you can download the source package and then execute:
 Then point your browser to http://127.0.0.1:5000/
 Currenlty the only working URL is http://127.0.0.1:5000/individual/1/pedigree (To pull the pedigree chart of the first individual)
 
-Webservice endpoints
+Webservice Endpoints:
 ==========
 (Main index)
 http://127.0.0.1:5000/ 
@@ -68,6 +63,11 @@ http://127.0.0.1:5000/individual/<id>
 
 (Desendency chart of individual <id>)
 http://127.0.0.1:5000/individual/<id>/descendents
+
+Copyrights:
+=======
+* Copyrighted material from the Indexed Gedcom Method (IGM) (TODO - put in the names of the IGM copyright holders) is the indent subroutine on the pedigree chart, and the look of the rendered html pages
+* GIMM copyrighted 2023 by Michael Groat and licensed under a GNU GPL.
 
 
 How to use Linekio/getmyancestors
