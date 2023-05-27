@@ -14,7 +14,7 @@ Advantages of GIMM
 
 Usage
 =======
-* &lt;derp>location where the repo was downloaded&gt;derp>/python3 gimmwebservice.py -g &lt;derp>relative or absolute path and filename of GEDCOM&gt;derp>
+* &lt; location where the repo was downloaded&gt;/python3 gimmwebservice.py -g &lt;relative or absolute path and filename of GEDCOM&gt;
 * for example: C:/Code/gimmwebservice/gimmwebservice/python3 gimmwebservice.py -g ../../personaldata/mygedcom.ged
 * You may need to install IIS, python, and python libraries (for example pip install flask).(TODO In the future I entend to package this repo, elivating this.)
 * This script requires python3 and the modules indicated in the requirements.txt file. To install the modules, run in your terminal:
@@ -65,18 +65,18 @@ http://127.0.0.1:5000/index
 
 
 
-(Pedigree chart of individual &lt;derp>id&gt;derp>)
+(Pedigree chart of individual {id})
 
-http://127.0.0.1:5000/individual/&lt;derp>id&gt;derp>/pedigree
+http://127.0.0.1:5000/individual/{id}/pedigree
 
 
-(Individual sheet of individual &lt;derp>id&gt;derp>)
+(Individual sheet of individual {id})
 
-http://127.0.0.1:5000/individual/<id>
+http://127.0.0.1:5000/individual/{id}
 
-(Desendency chart of individual &lt;derp>id&gt;derp>)
+(Desendency chart of individual {id})
 
-http://127.0.0.1:5000/individual/<id>/descendents
+http://127.0.0.1:5000/individual/{id}/descendents
 
 Copyrights:
 =======
