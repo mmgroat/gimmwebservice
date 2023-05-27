@@ -332,3 +332,6 @@ class Gedcom:
                 self.indi[num].fams_fid.add(
                     (self.fam[fams].husb_fid, self.fam[fams].wife_fid)
                 )
+                self.indi[num].fams_num_spouses_num.add(
+                    (self.fam[fams].husb_num, self.fam[fams].wife_num)
+                )

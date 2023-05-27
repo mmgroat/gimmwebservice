@@ -25,7 +25,13 @@ The project is maintained at https://github.com/mmgroat/printVeryLargeTextPedigr
 
 This script requires python3 and the modules indicated in the requirements.txt file. To install the modules, run in your terminal:
 
-(Right now, invoke the script directly through command line, working on getting packaging to work: C:\python3 -m printVeryLargeTextPedigrees <options>)
+(Right now, invoke the scripts directly through command line, working on getting packaging to work: 
+printVeryLargeTextPedigrees:
+   python3 -m printVeryLargeTextPedigrees <options>)
+gimwebserivce: (TODO to make a package)
+   pip install Flask
+   python3 gimmwebservice.py -g <path and filename of GEDCOM file>
+
 (for the webserive run "python -m flask run --app pedigreewebervice" -- TODO and can be accesed at http://127.0.0.1:5000/individual - which can be configured, currently just displays the pedgiree of the first person in the Gedcom, given that the attribute identifier for the person is @I1@)
 
 Support

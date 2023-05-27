@@ -283,8 +283,8 @@ def main():
             )
             loop.run_until_complete(download_stuff(loop))
         else:
+            # Load from tree from GEDCOM file
             tree = Tree()
-            # Load from file
             ged = Gedcom(args.load_from_file, tree)
             tree.indi = ged.indi
             
