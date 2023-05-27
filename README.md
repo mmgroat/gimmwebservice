@@ -1,6 +1,4 @@
-gimmwebservice
-
-GIMM (Gedcom in Memory Method) Web Service
+gimmwebservice - GIMM (Gedcom in Memory Method) Web Service
 =======
 _gimmwebservice_  is a python3 package that serves genealogy html pages (pedigree and descendency charts, individual sheets) from a GEDCOM on your local file system. It is designed to support and run quickly on a  GECOMM with hundreds of thousands of people. Tell the program where your GEDCOM is located, run it, then point your browser to http://127.0.0.1:5000 (TODO - see if IIS needs to be installed)
 
