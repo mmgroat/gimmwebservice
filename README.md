@@ -14,7 +14,7 @@ Advantages of GIMM
 
 Usage
 =======
-* <location where the repo was downloaded>/python3 gimmwebservice.py -g <relative or absolute path and filename of GEDCOM>
+* &lt;location where the repo was downloaded&gt;/python3 gimmwebservice.py -g &lt;relative or absolute path and filename of GEDCOM&gt;
 * for example: C:/Code/gimmwebservice/gimmwebservice/python3 gimmwebservice -g ../../personaldata/mygedcom.ged
 * You may need to install libraries (TODO to package this repo to elivated this) with pip: pip install flask
 * This script requires python3 and the modules indicated in the requirements.txt file. To install the modules, run in your terminal:
@@ -47,7 +47,7 @@ Otherwise, you can download the source package and then execute:
 
 (TODO) `python3 setup.py install`
 
-(CURRENTLY) download the source package, navigate to the gimmwebservice directory and run python3 gimmwebservice.py -g <location and name of GEDCOM>
+(CURRENTLY) download the source package, navigate to the gimmwebservice directory and run python3 gimmwebservice.py -g &lt;location and name of GEDCOM&gt;
 Then point your browser to http://127.0.0.1:5000/
 Currenlty the only working URL is http://127.0.0.1:5000/individual/1/pedigree (To pull the pedigree chart of the first individual)
 
@@ -59,14 +59,14 @@ http://127.0.0.1:5000/individual
 http://127.0.0.1:5000/individuals
 http://127.0.0.1:5000/index
 
-(Pedigree chart of individual <id>)
-http://127.0.0.1:5000/individual/<id>/pedigree
+(Pedigree chart of individual &lt;id&gt;)
+http://127.0.0.1:5000/individual/&lt;id&gt;/pedigree
 
-(Individual sheet of individual <id>)
-http://127.0.0.1:5000/individual/<id>
+(Individual sheet of individual &lt;id&gt;)
+http://127.0.0.1:5000/individual/&lt;id&gt;
 
-(Desendency chart of individual <id>)
-http://127.0.0.1:5000/individual/<id>/descendents
+(Desendency chart of individual &lt;id&gt;)
+http://127.0.0.1:5000/individual/&lt;id&gt;/descendents
 
 Copyrights:
 =======
