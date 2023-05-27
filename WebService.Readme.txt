@@ -1,4 +1,0 @@
-EndPoints
-GET  /individuals/{id}           # family sheet of individual with id
-GET  /individuals/{id}/pedigree  # pedigree chart of individual with id
-GET  /individuals                # Get a list of individuals

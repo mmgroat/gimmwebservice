@@ -1,7 +1,7 @@
 gimmwebserive (Gedcom in Memory Method) web service
 ==============
 
-_gimmwebservice_  is a python3 package (TODO - package-ize it) that serves genealogy html pages (pedigree and descendency charts, individual sheets) from a GEDCOM on your local file system. Uses the Flask framework. It is designed to support and run quickly on a  GECOMM with hundreds of thousands of people. Tell the program where your GEDCOM is located, run it, then point your browser to http://127.0.0.1:5000 (TODO - see if IIS needs to be installed)
+_gimmwebservice_  is a python3 package (TODO - package-ize it) that serves genealogy html pages (pedigree and descendency charts, individual sheets) from a GEDCOM on your local file system. It is designed to support and run quickly on a  GECOMM with hundreds of thousands of people. Tell the program where your GEDCOM is located, run it, then point your browser to http://127.0.0.1:5000 (TODO - see if IIS needs to be installed)
 
 Advantages of GIMM:
 =======
