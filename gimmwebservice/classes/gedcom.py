@@ -180,6 +180,8 @@ class Gedcom:
                 if num not in self.note:
                     self.note[num] = Note(tree=self.tree, num=num)
                 name.note = self.note[num]
+            elif self.tag == "SOUR":
+                name.sources.add(self.__get_link_source(cutoff_level = 2, name = name.given))
         if not added:
             self.indi[self.num].birthnames.add(name)
         self.flag = True
@@ -265,19 +267,34 @@ class Gedcom:
                 self.sour[self.num].notes.add(self.note[num])
         self.flag = True
 
-    def __get_link_source(self):
+    def __get_link_source(self, cutoff_level = 1, name = 'unknown'):
         """Parse a link to a source"""
+        num = None
         try:
             num = int(self.data[2 : len(self.data) - 1])
+            if (name == 'Hieronimus'):
+                print ('At Hieronimus, num is ' + str(num))
         except ValueError:
+            if num is not None:
+                print("Source Error " + str(num))
+            else:
+                print("Source Error " + self.data)
             return None
         if num not in self.sour:
             self.sour[num] = Source(num=num)
+            if (name == 'Hieronimus'):
+                print ('At Hieronimus Part 2, num is ' + str(num))
+                print ('At Hieronimus part 2 ' + str(self.sour[num]))
+        else:
+            if (name == 'Hieronimus'):
+                print("Source is in self.sour " + str(self.sour[num]))
         page = None
-        while self.__get_line() and self.level > 1:
+        while self.__get_line() and self.level > cutoff_level:
             if self.tag == "PAGE":
                 page = self.__get_text()
         self.flag = True
+        if (name == 'Hieronimus'):
+            print("At Hieronimus return, Source is " + str(self.sour[num]))
         return (self.sour[num], page)
 
     def __get_memorie(self):
@@ -323,15 +340,32 @@ class Gedcom:
                 self.fam[num].wife_fid = self.indi[self.fam[num].wife_num].fid
             for chil in self.fam[num].chil_num:
                 self.fam[num].chil_fid.add(self.indi[chil].fid)
+                # add chil to parents.children set - MMG
+                if self.fam[num].husb_num in self.indi:
+                    self.indi[self.fam[num].husb_num].children.add((self.fam[num].husb_num, self.fam[num].wife_num, chil))
+                if self.fam[num].wife_num in self.indi:
+                    self.indi[self.fam[num].wife_num].children.add((self.fam[num].husb_num, self.fam[num].wife_num, chil))
         for num in self.indi:
             for famc in self.indi[num].famc_num:
                 self.indi[num].famc_fid.add(
                     (self.fam[famc].husb_fid, self.fam[famc].wife_fid)
                 )
             for fams in self.indi[num].fams_num:
+                # This may be a bug, what if there are multiple spouses that are unknown? May need to add fams_num as third in tuple.
                 self.indi[num].fams_fid.add(
                     (self.fam[fams].husb_fid, self.fam[fams].wife_fid)
                 )
+                # Create new set fams_num_spouse_num, which contains the husb, wife individual nums (not fid) 
+                # original fams_num just contains the spouse's family num, not an individual num. Would have to do lots 
+                # of redirection to get to family in tree.fam - since that is now indexed on individual nums. - MMG
                 self.indi[num].fams_num_spouses_num.add(
                     (self.fam[fams].husb_num, self.fam[fams].wife_num)
                 )
+                # Add spouses information for easy parsing on individual sheet
+                if self.fam[fams].husb_num == num:
+                    self.indi[num].spouses.add(self.fam[fams].wife_num)
+                if self.fam[fams].wife_num == num:
+                    self.indi[num].spouses.add(self.fam[fams].husb_num)
+            if self.indi[num].name.given == 'Hieronimus':
+                for source in self.indi[num].name.sources:
+                    print ("At add id Hieronimus" + str(source[0]))

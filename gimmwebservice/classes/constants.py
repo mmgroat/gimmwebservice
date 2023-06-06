@@ -3,11 +3,14 @@
 # Subject to change: see https://www.familysearch.org/developers/docs/api/tree/Persons_resource
 MAX_PERSONS = 200
 
+MAX_GENERATIONS = 200
+
 FACT_TAGS = {
     "http://gedcomx.org/Birth": "BIRT",
     "http://gedcomx.org/Christening": "CHR",
     "http://gedcomx.org/Death": "DEAT",
     "http://gedcomx.org/Burial": "BURI",
+    "http://gedcomx.org/Graduation": "GRAD",
     "http://gedcomx.org/PhysicalDescription": "DSCR",
     "http://gedcomx.org/Occupation": "OCCU",
     "http://gedcomx.org/MilitaryService": "_MILT",
@@ -43,6 +46,7 @@ ORDINANCES_STATUS = {
     "InProgressNotPrinted": "SUBMITTED",
     "NotNeeded": "INFANT",
 }
+
 
 # mergemyancestors constants and functions
 def reversed_dict(d):

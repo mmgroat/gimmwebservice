@@ -1,5 +1,9 @@
 # coding: utf-8
 
+# App: gimmwebservice
+# Original Author - Michael Groat
+# 5/27/2023
+
 # global imports
 #from __future__ import print_function
 #import re
@@ -11,20 +15,23 @@ import sys
 import argparse
 import io
 import os
+import time
+import traceback
 from datetime import datetime
 from flask import Flask
 from flask import request
 
 # local imports
 from classes.tree import Fam, Tree
+from classes.pedigree import Pedigree
+from classes.individualsheet import IndividualSheet
 from classes.gedcom import Gedcom
 #from classes.session import Session
-
 
 app = Flask(__name__)
 debug = True
 
-print("Hellow World!")
+print("Starting parsing of GEDCOM")
 
 parser = argparse.ArgumentParser(
     description="Create webservice from local gedcom file to serve genealogical HTML pages (May 21 2023)",
@@ -48,25 +55,6 @@ except TypeError as e:
         traceback.print_exc()
     sys.exit(2)
 
-returnHTML =  "<!DOCTYPE html>\n" \
-    "<html lang=\"en\">\n" \
-    "<meta charset=\"UTF-8\">\n" \
-    "<title>Page Title</title>\n" \
-    "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n" \
-    "<link rel=\"stylesheet\" href=\"\">\n" \
-    "<style>\n" \
-    "</style>\n" \
-    "<script src=\"\"></script>\n" +\
-    "<body>\n" \
-    "<img src=\"img_la.jpg\" alt=\"LA\" style=\"width:100%\">\n" \
-    "<div class=\"\">\n" \
-    " <h1>This is a Heading</h1>\n" \
-    " <p>This is a paragraph.</p>\n " \
-    " <p>This is another paragraph.</p> \n " \
-    "</div>\n" \
-    "</body>\n" \
-    "</html>\n"
-
 # extract arguments from the command line
 try:
     parser.error = parser.exit
@@ -79,9 +67,11 @@ except SystemExit as e:
     sys.exit(2)
 
 # Load GedCom from file in a NonFS tree (doesn't assume FIDs exist)
+time_count = time.time()
 if not args.gedcom_input_file:
     sys.stderr.write("A GEDCOM file is required to run this webservice\n")
     sys.exit(2)
+    
 tree = Tree()
 ged = Gedcom(args.gedcom_input_file, tree)
 tree.lastmodifiedtime = datetime.fromtimestamp(os.path.getmtime(args.gedcom_input_file.name)).strftime('%B %d, %Y %H:%M:%S')
@@ -112,9 +102,19 @@ for num in ged.fam:
     if ged.fam[num].sources:
         tree.fam[(husb, wife)].sources = ged.fam[num].sources
     tree.fam[(husb, wife)].sealing_spouse = ged.fam[num].sealing_spouse
-sys.stdout.write("Finished Parsing GedCom into Tree\n")
-    # do we want notes - assume only read into memory, not written back to filesystem    
-#tree.reset_num_no_fid(self)
+
+# do we want notes - assume only read into memory, not written back to filesystem    
+tree.sources = ged.sour
+
+for source in tree.indi[3969].name.sources:
+    print ("At gimmwebservice" + str(source[0]))
+
+# tree.reset_num_no_fid(self)
+
+pedigrees = Pedigree(tree)
+individualsheets = IndividualSheet(tree)
+
+print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
 
 @app.get('/individual/<indi_num>/pedigree')
 def get_pedigree(indi_num):
@@ -125,11 +125,19 @@ def get_pedigree(indi_num):
        maxlevel = int(maxlevel) - 2
        if maxlevel < -1:
            maxlevel = -1
-   return tree.print_pedigree_html(int(indi_num), maxlevel)
+   return pedigrees.render(int(indi_num), maxlevel)
+
+@app.get('/individual/<indi_num>')
+def get_individual_sheet(indi_num):
+   return individualsheets.render(int(indi_num))
 
 @app.get('/images/background')
 def get_backgroundimage():
     return app.send_static_file('background.jpg')
+
+
+
+
 
 # start the webserver
 if __name__ == "__main__":
