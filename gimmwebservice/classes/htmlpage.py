@@ -29,3 +29,15 @@ class HTMLPage:
         #output += "<B>Home Page:</B> <A href=\"" + home_page_url + "\">" + self.indi[1].name.pretty_print() + "'s Homepage</A></CENTER>"
         return output
 
+    def render_footer(self) -> str:
+        """Prints HTML bottom part of page """
+        output = "<HR><EM>Please send genealogical corrections, additions, or comments to </EM>"
+        if self.tree.contactemail:
+           output += "<A HREF=\"mailto:" + self.tree.contactemail + "\">"
+        output += self.tree.indi[1].name.pretty_print()
+        if self.tree.contactemail:
+            output += "</A>"
+        output += "\n<HR>Created by GIMMWebService " + self.tree.gimmversion + "<BR>\n"
+        output += "Copyright 2023 &copy <A HREF=\"http://github.com/mmgroat\">Michael Groat</A><BR><BR>\n"
+        output += "</BODY>\n</HTML>\n"
+        return output

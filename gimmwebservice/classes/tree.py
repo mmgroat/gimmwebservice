@@ -145,7 +145,9 @@ class Fact:
     """
 
     def __init__(self, data=None, tree=None):
-        self.value = self.type = self.date = self.place = self.note = self.map = None
+        self.value = self.type = self.date = self.place = self.map = None
+        self.notes = set()
+        self.sources = set()
         if data:
             if "value" in data:
                 self.value = data["value"]
@@ -165,7 +167,8 @@ class Fact:
                 if "description" in place and place["description"][1:] in tree.places:
                     self.map = tree.places[place["description"][1:]]
             if "changeMessage" in data["attribution"]:
-                self.note = Note(data["attribution"]["changeMessage"], tree)
+                note = Note(data["attribution"]["changeMessage"], tree)
+                self.notes.add((Note(data["attribution"]["changeMessage"], tree)).num)
             if self.type == "http://gedcomx.org/Death" and not (
                 self.date or self.place
             ):
@@ -200,9 +203,9 @@ class Fact:
         output = "<li><em>" 
         if self.type is not None:
             output += self.type.replace("http://gedcomx.org/", "") + ": " 
+        output += "</em> " 
         if self.value is not None:
             output += self.value.replace("http://gedcomx.org/", "")
-        output += "</em> " 
         if self.date is not None:
             output += self.date
         if self.place is not None:
@@ -210,8 +213,9 @@ class Fact:
         if self.map is not None:
             latitude, longitude = self.map
             output += " at " + "LATI: " + str(latitude) + " LONG: " + str(longitude)
-        if self.note is not None:
-            output += " with note: " + str(self.note.text)
+        if self.notes:
+            for note in self.notes:
+                output += " with note: " + str(note.text)
         return output
 
 class Memorie:
@@ -250,7 +254,8 @@ class Name:
         self.surname = ""
         self.prefix = None
         self.suffix = None
-        self.note = None
+        # Names can have sources and notes (multiple notes)
+        self.notes = set()
         self.sources = set()
         if data:
             if "parts" in data["nameForms"][0]:
@@ -768,6 +773,8 @@ class Tree:
         self.places = dict()
         self.display_name = self.lang = None
         self.lastmodifiedtime = None
+        self.contactemail = None
+        self.gimmversion = None
         if fs:
             self.display_name = fs.display_name
             self.lang = babelfish.Language.fromalpha2(fs.lang).name

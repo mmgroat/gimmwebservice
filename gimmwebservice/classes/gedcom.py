@@ -1,5 +1,5 @@
 # mergemyancestors classes
-#from printverylargetextpedigrees.classes.tree import (
+#from gimmwebservices.classes.tree import (
 from classes.tree import (
     Indi,
     Fact,
@@ -10,7 +10,7 @@ from classes.tree import (
     Ordinance,
     Source,
 )
-#from printverylargetextpedigrees.classes.constants import FACT_TYPES, ORDINANCES
+#from gimmwebservices.classes.constants import FACT_TYPES, ORDINANCES
 from classes.constants import FACT_TYPES, ORDINANCES
 
 class Gedcom:
@@ -181,7 +181,7 @@ class Gedcom:
                     self.note[num] = Note(tree=self.tree, num=num)
                 name.note = self.note[num]
             elif self.tag == "SOUR":
-                name.sources.add(self.__get_link_source(cutoff_level = 2, name = name.given))
+                name.sources.add(self.__get_link_source(cutoff_level = 2))
         if not added:
             self.indi[self.num].birthnames.add(name)
         self.flag = True
@@ -208,12 +208,16 @@ class Gedcom:
                 num = int(self.data[2 : len(self.data) - 1])
                 if num not in self.note:
                     self.note[num] = Note(tree=self.tree, num=num)
-                fact.note = self.note[num]
+                # MMG - Dont assume note is singular?
+                fact.notes.add(self.note[num])
+            # MMG CONT and CONC could be from a note that is a "Description"
             elif self.tag == "CONT":
                 fact.value += "\n" + self.data
             elif self.tag == "CONC":
                 if self.data is not None and fact.value is not None:
                     fact.value += self.data
+            elif self.tag == "SOUR":
+                fact.sources.add(self.__get_link_source(cutoff_level = 2))
         self.flag = True
         return fact
 
@@ -267,34 +271,30 @@ class Gedcom:
                 self.sour[self.num].notes.add(self.note[num])
         self.flag = True
 
-    def __get_link_source(self, cutoff_level = 1, name = 'unknown'):
+    def __get_link_source(self, cutoff_level = 1):
         """Parse a link to a source"""
         num = None
-        try:
-            num = int(self.data[2 : len(self.data) - 1])
-            if (name == 'Hieronimus'):
-                print ('At Hieronimus, num is ' + str(num))
-        except ValueError:
-            if num is not None:
-                print("Source Error " + str(num))
-            else:
-                print("Source Error " + self.data)
-            return None
+        details = ''
+        if self.data[:8] == "Details:":
+            details = self.data[13:]
+        else: 
+            try:
+                num = int(self.data[2 : len(self.data) - 1])
+            except ValueError:
+                if num is not None:
+                    print("Source Error " + str(num))
+                else:
+                    print("Source Error " + self.data)
+                return None
         if num not in self.sour:
             self.sour[num] = Source(num=num)
-            if (name == 'Hieronimus'):
-                print ('At Hieronimus Part 2, num is ' + str(num))
-                print ('At Hieronimus part 2 ' + str(self.sour[num]))
-        else:
-            if (name == 'Hieronimus'):
-                print("Source is in self.sour " + str(self.sour[num]))
-        page = None
+        page = details
         while self.__get_line() and self.level > cutoff_level:
             if self.tag == "PAGE":
-                page = self.__get_text()
+                page += self.__get_text()
+            if self.tag == "_FOOT":
+                page += self.__get_text()
         self.flag = True
-        if (name == 'Hieronimus'):
-            print("At Hieronimus return, Source is " + str(self.sour[num]))
         return (self.sour[num], page)
 
     def __get_memorie(self):
@@ -366,6 +366,4 @@ class Gedcom:
                     self.indi[num].spouses.add(self.fam[fams].wife_num)
                 if self.fam[fams].wife_num == num:
                     self.indi[num].spouses.add(self.fam[fams].husb_num)
-            if self.indi[num].name.given == 'Hieronimus':
-                for source in self.indi[num].name.sources:
-                    print ("At add id Hieronimus" + str(source[0]))
+     

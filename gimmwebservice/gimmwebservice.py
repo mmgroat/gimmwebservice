@@ -26,6 +26,8 @@ from classes.tree import Fam, Tree
 from classes.pedigree import Pedigree
 from classes.individualsheet import IndividualSheet
 from classes.gedcom import Gedcom
+from classes.masterindex import MasterIndex
+#from classes.subindexes import SubIndexes
 #from classes.session import Session
 
 app = Flask(__name__)
@@ -37,6 +39,14 @@ parser = argparse.ArgumentParser(
     description="Create webservice from local gedcom file to serve genealogical HTML pages (May 21 2023)",
     add_help=False,
     usage="python -m flask --app gimmwebservice -g <gedcom relative path and file>",
+)
+parser.add_argument(
+    "-e", 
+    "--email", 
+    metavar="<STR>", 
+    type=str, 
+    default=False,
+    help="Contact Email",
 )
 try:
     parser.add_argument(
@@ -75,7 +85,8 @@ if not args.gedcom_input_file:
 tree = Tree()
 ged = Gedcom(args.gedcom_input_file, tree)
 tree.lastmodifiedtime = datetime.fromtimestamp(os.path.getmtime(args.gedcom_input_file.name)).strftime('%B %d, %Y %H:%M:%S')
-
+tree.contactemail = args.email
+tree.gimmversion = "Version 0.01 (<A HREF=\"http://github.com/mmgroat/gimmwebservice\">Program Information</A>)"
 fam_counter = 0
 tree.indi = ged.indi
 # Add parent information (to any GEDCOM (assume non FS))
@@ -102,19 +113,19 @@ for num in ged.fam:
     if ged.fam[num].sources:
         tree.fam[(husb, wife)].sources = ged.fam[num].sources
     tree.fam[(husb, wife)].sealing_spouse = ged.fam[num].sealing_spouse
-
-# do we want notes - assume only read into memory, not written back to filesystem    
 tree.sources = ged.sour
-
-for source in tree.indi[3969].name.sources:
-    print ("At gimmwebservice" + str(source[0]))
-
+tree.notes = ged.note
 # tree.reset_num_no_fid(self)
-
 pedigrees = Pedigree(tree)
 individualsheets = IndividualSheet(tree)
-
+masterindex = MasterIndex(tree)
+masterindexoutput = masterindex.render()
 print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
+sys.stdout.flush()
+
+@app.get('/images/background')
+def get_backgroundimage():
+    return app.send_static_file('background.jpg')
 
 @app.get('/individual/<indi_num>/pedigree')
 def get_pedigree(indi_num):
@@ -131,16 +142,21 @@ def get_pedigree(indi_num):
 def get_individual_sheet(indi_num):
    return individualsheets.render(int(indi_num))
 
-@app.get('/images/background')
-def get_backgroundimage():
-    return app.send_static_file('background.jpg')
+@app.get('/')
+@app.get('/index')
+@app.get('/index/')
+def get_main_index():
+    # Since this is more or less a static page - generate a string of the page when parsing GEDCOM and just send it on request, 
+    # don't regenerate the string 
+    return masterindexoutput # testing
 
-
-
-
+@app.get('/index/<index_num>')
+def get_sub_index(index_num):
+    # Since these are more or less static pages - generate strings for each sub index page when parsing GEDCOM and just send each on request, 
+    # don't regenerate any strings, 
+    return masterindexoutput # testing
 
 # start the webserver
 if __name__ == "__main__":
     app.debug = True
     app.run()
-

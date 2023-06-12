@@ -164,6 +164,7 @@ class Pedigree(HTMLPage):
                 output += motheroutput
             ancestors_line_numbers[linenumber] = [fatherlinenumber, motherlinenumber]
             return (linenumber, output)
+        
         output = self.render_header() # would this make more sense to call from an HTMLFactory object?
         output += render_menu(targetid)
         output += "<H1>Ancestors of " + self.tree.indi[targetid].name.pretty_print() + "</H1>\n"
@@ -178,7 +179,7 @@ class Pedigree(HTMLPage):
         output += render_menu(targetid)
         output += render_script()
         ancestors_line_numbers.clear()
-        output += "</body>\n</html>\n"
+        output += self.render_footer()
         return output
     
     def render_individual(self, indi, level, linenumber, isTop, parities, has_appeared) -> str:
