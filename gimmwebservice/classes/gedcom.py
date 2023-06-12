@@ -265,6 +265,7 @@ class Gedcom:
                 try:
                     num = int(self.data[2 : len(self.data) - 1])
                 except ValueError:
+                    print("Could not parse Note in Source: source #: " + str(self.num))
                     continue
                 if num not in self.note:
                     self.note[num] = Note(tree=self.tree, num=num)

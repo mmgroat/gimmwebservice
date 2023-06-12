@@ -120,6 +120,14 @@ pedigrees = Pedigree(tree)
 individualsheets = IndividualSheet(tree)
 masterindex = MasterIndex(tree)
 masterindexoutput = masterindex.render()
+#TODO: Question - Do we want to remove birth and death information for living individuals
+# I've had people contact me in the past requesting this info not be posted.
+# Perhaps an option for public/private tree viewing?
+#if args.public == True:
+#    tree = tree.privatize()
+
+#TODO: Do we want to be able to put photos here? How does a photo work in a text pedigree?
+
 print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
 sys.stdout.flush()
 
@@ -155,6 +163,38 @@ def get_sub_index(index_num):
     # Since these are more or less static pages - generate strings for each sub index page when parsing GEDCOM and just send each on request, 
     # don't regenerate any strings, 
     return masterindexoutput # testing
+
+@app.get('/accesslog')
+def get_access_log():
+    # TODO: Need to record accesses (Are there going to be persistent?)
+    return individualsheets.render(int(indi_num)) #testing
+
+@app.get('/counters')
+def get_counters():
+    # maybe put these somewhere else in another page?
+    return individualsheets.render(int(indi_num)) #testing
+
+@app.get('/guestbook')
+def get_guestbook():
+    # Do we want to have a guestbook, and perhaps make it persistent?
+    return individualsheets.render(int(indi_num)) #testing
+
+@app.get('/search')
+def search():
+    # Do we want all searches to go here? String search and name seach?
+    return individualsheets.render(int(indi_num)) #testing
+
+@app.get('/download')
+def get_gedcom():
+    # Do we want to download seperate branchs?
+    return individualsheets.render(int(indi_num)) #testing
+
+@app.get('/createlink')
+def put_link():
+    # Do we even want to allow links? Seems dangerous nowadays, unless monitored before publish.
+    # Could be the start of a wiki tree? How about adding/changing individuals? (WikiTree???)
+    return individualsheets.render(int(indi_num)) #testing
+
 
 # start the webserver
 if __name__ == "__main__":
