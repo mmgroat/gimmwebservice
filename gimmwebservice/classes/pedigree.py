@@ -16,7 +16,7 @@ class Pedigree(HTMLPage):
         self.tree = tree
   
     def render(self, targetid, maxlevel = MAX_GENERATIONS) -> str:
-        """print pedigree chart in html from tree objet"""
+        """print collaspable pedigree chart in html from tree objet for target individual"""
         linenumber = 0
         if maxlevel is None:
             maxlevel = MAX_GENERATIONS
@@ -135,6 +135,102 @@ class Pedigree(HTMLPage):
 
         def render_recursive(targetid, level, isTop, parities) -> (int, str):
             """recurse through tree, printing Individuals"""
+
+            def render_individual(indi, level, linenumber, isTop, parities, has_appeared) -> str:
+
+                def indent(level, parities):
+                    # TODO Parity
+                    tmp = "         "
+                    #file.write("parities is " + str(parities) + "\n")
+                    for x in range(level - 1):
+                        tmp1 = 1 << x
+                        tmp2 = 1 << x + 1
+                        p = (~0) if (parities & tmp1) else 0
+                        q = (~0) if (parities & tmp2) else 0
+                        if (p ^ q):
+                            tmp += '|'
+                        else:
+                            tmp += ' '
+                        tmp += '       '
+                    return tmp
+                
+                def build_fact_line(type, factstring) -> str:
+                    output = ""
+                    if (factstring is None or factstring == ""):
+                        return output
+                    output += tempIndentation
+                    if (isTop):
+                        output += "|"
+                    else:
+                        output += " "
+                    output += "      "
+                    if len(indi.parents) and list(indi.parents)[0][1] is not None: 
+                        # mother is known (so we need an extra pipe)
+                        output += " <div id='DivID" + str(linenumber)
+                        # need a b c d e f divs because if divs all the same, collaspe only works on the first one.
+                        # Could maybe use a class here - "DivClass + str(linenumber) + pipe|clear"
+                        match type:
+                            case "BIRT":
+                                output += "a"
+                            case "MARR":
+                                output += "c"
+                            case "DEAT":
+                                output += "e"
+                        output += "'>|</div><div id='DivID" + str(linenumber)
+                        match type:
+                            case "BIRT":
+                                output += "b"
+                            case "MARR":
+                                output += "d"
+                            case "DEAT":
+                                output += "f"
+                        output += "' style='display: none;'> </div>"
+                        match (len(str(level + 1))):
+                            case 1:
+                                output += " "
+                            case 2:
+                                output += "  "
+                            case 3:
+                                output += "   "
+                            case _:
+                                output += "   "
+                    elif len(indi.parents) and list(indi.parents)[0][0] is not None:
+                        # father is known, but mother is not (hence button present but no need for extra pipe and so we need more spaces)
+                        output += "    "
+                    output += factstring + "\n"
+                    return output
+
+                output = ""
+                if level != 0:
+                    tempIndentation = indent(level, parities)
+                    output += tempIndentation
+                    if (isTop):
+                        output += "/"
+                    else:
+                        output += "\\"
+                else:
+                    tempIndentation = " "
+                    output += "  "
+                output += "-- "
+                
+                if len(indi.parents):
+                    output += "<button id=\"ButtonID" + str(linenumber) + "\" onclick=\"hidebranches(" + str(linenumber) + ",1)\">-</button> "
+                output += str(level + 1) + " <A HREF=/individual/" + str(indi.num) + "><B>" + indi.name.pretty_print() + "</B></A>" # do we want self.fid instead of self.num later?
+                if (has_appeared):
+                    output += " <A HREF=\"#" + str(indi.num) + "\">(Person is repeated, click here)</A>"
+                else:
+                    output += "<A NAME=\"" + str(indi.num) + "\"></A>"
+                # TODO: Do we want => in case of max level (to display) (Or do we want a drop down box to collaspe at a certain generation?)
+                output += "\n"
+                # print birth/marriage/death information
+                if not has_appeared:
+                    output += build_fact_line("BIRT", indi.pretty_print_birth())
+                    if (isTop):
+                        output += build_fact_line("MARR", indi.pretty_print_marriage_preferred(self.tree)) # need tree for family information
+                    output += build_fact_line("DEAT", indi.pretty_print_death())            
+                    output += "</div><div id='DivID" + str(linenumber + 1) + "'>"
+                return output
+
             nonlocal linenumber
             nonlocal maxlevel
             output = ""
@@ -157,13 +253,14 @@ class Pedigree(HTMLPage):
                 output += fatheroutput
             # display individual
             linenumber = linenumber + 1
-            output += self.render_individual(self.tree.indi[targetid], level, linenumber, isTop, parities, has_appeared)
+            templinenumber = linenumber
+            output += render_individual(self.tree.indi[targetid], level, linenumber, isTop, parities, has_appeared)
             # recurse into mother pedigree
             if mother and not has_appeared:
                 motherlinenumber, motheroutput = render_recursive(mother, level, False, parities|(1<<level))
                 output += motheroutput
-            ancestors_line_numbers[linenumber] = [fatherlinenumber, motherlinenumber]
-            return (linenumber, output)
+            ancestors_line_numbers[templinenumber] = [fatherlinenumber, motherlinenumber]
+            return (templinenumber, output)
         
         output = self.render_header() # would this make more sense to call from an HTMLFactory object?
         output += render_menu(targetid)
@@ -182,97 +279,3 @@ class Pedigree(HTMLPage):
         output += self.render_footer()
         return output
     
-    def render_individual(self, indi, level, linenumber, isTop, parities, has_appeared) -> str:
-
-        def indent(level, parities):
-            # TODO Parity
-            tmp = "         "
-            #file.write("parities is " + str(parities) + "\n")
-            for x in range(level - 1):
-                tmp1 = 1 << x
-                tmp2 = 1 << x + 1
-                p = (~0) if (parities & tmp1) else 0
-                q = (~0) if (parities & tmp2) else 0
-                if (p ^ q):
-                    tmp += '|'
-                else:
-                    tmp += ' '
-                tmp += '       '
-            return tmp
-        
-        def build_fact_line(type, factstring) -> str:
-            output = ""
-            if (factstring is None or factstring == ""):
-                return output
-            output += tempIndentation
-            if (isTop):
-                output += "|"
-            else:
-                output += " "
-            output += "      "
-            if len(indi.parents) and list(indi.parents)[0][1] is not None: 
-                # mother is known (so we need an extra pipe)
-                output += " <div id='DivID" + str(linenumber)
-                # need a b c d e f divs because if divs all the same, collaspe only works on the first one.
-                # Could maybe use a class here - "DivClass + str(linenumber) + pipe|clear"
-                match type:
-                    case "BIRT":
-                        output += "a"
-                    case "MARR":
-                        output += "c"
-                    case "DEAT":
-                        output += "e"
-                output += "'>|</div><div id='DivID" + str(linenumber)
-                match type:
-                    case "BIRT":
-                        output += "b"
-                    case "MARR":
-                        output += "d"
-                    case "DEAT":
-                        output += "f"
-                output += "' style='display: none;'> </div>"
-                match (len(str(level + 1))):
-                    case 1:
-                        output += " "
-                    case 2:
-                        output += "  "
-                    case 3:
-                        output += "   "
-                    case _:
-                        output += "   "
-            elif len(indi.parents) and list(indi.parents)[0][0] is not None:
-                # father is known, but mother is not (hence button present but no need for extra pipe and so we need more spaces)
-                output += "    "
-            output += factstring + "\n"
-            return output
-
-        output = ""
-        if level != 0:
-            tempIndentation = indent(level, parities)
-            output += tempIndentation
-            if (isTop):
-                output += "/"
-            else:
-                output += "\\"
-        else:
-            tempIndentation = " "
-            output += "  "
-        output += "-- "
-        
-        if len(indi.parents):
-            output += "<button id=\"ButtonID" + str(linenumber) + "\" onclick=\"hidebranches(" + str(linenumber) + ",1)\">-</button> "
-        output += str(level + 1) + " <A HREF=/individual/" + str(indi.num) + "><B>" + indi.name.pretty_print() + "</B></A>" # do we want self.fid instead of self.num later?
-        if (has_appeared):
-            output += " <A HREF=\"#" + str(indi.num) + "\">(Person is repeated, click here)</A>"
-        else:
-            output += "<A NAME=\"" + str(indi.num) + "\"></A>"
-        # TODO: Do we want => in case of max level (to display) (Or do we want a drop down box to collaspe at a certain generation?)
-        output += "\n"
-        # print birth/marriage/death information
-        if not has_appeared:
-            output += build_fact_line("BIRT", indi.pretty_print_birth())
-            if (isTop):
-                output += build_fact_line("MARR", indi.pretty_print_marriage_preferred(self.tree)) # need tree for family information
-            output += build_fact_line("DEAT", indi.pretty_print_death())            
-            output += "</div><div id='DivID" + str(linenumber + 1) + "'>"
-        return output

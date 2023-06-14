@@ -1,13 +1,14 @@
 [project]
-name = "printVeryLargeTextPedigrees"
+name = "gimmwebservice"
 description = "Create html,txt,pdfs text of large pedigrees from FamilySearch Tree"
 requires-python = ">=3.7"
 license = {text = "GNU"}
 keywords = [
-  "printverylargetextpedigrees",
+  "gimmwebservice",
   "familysearch",
   "fstogedcom",
   "gedcom",
+  "gedcom2web",
 ]
 classifiers = [
     "Environment :: Console",
@@ -24,17 +25,17 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [tool.setuptools.dynamic]
-version = {attr = "getmyancestors.__version__"}
+version = {attr = "gimmwebservice.__version__"}
 readme = {file = ["README.md"]}
 
 [project.urls]
-HomePage = "https://github.com/mmgroat/printVeryLargeTextPedigrees"
+HomePage = "https://github.com/mmgroat/gimmwebservice"
 
 [tool.setuptools.package-data]
-printverylargetextpedigrees = ["fstogedcom.png"]
+gimmwebservice = ["fstogedcom.png"]
 
 [project.scripts]
-printverylargetextpedigrees = "printverylargetextpedigrees.printverylargetextpedigrees:main"
-mergemyancestors = "getmyancestors.mergemyancestors:main"
-fstogedcom = "getmyancestors.fstogedcom:main"
+gimmwebservice = "gimmwebservice.gimmwebservice:main"
+mergemyancestors = "gimmwebservice.mergemyancestors:main"
+fstogedcom = "gimmwebservice.fstogedcom:main"
 

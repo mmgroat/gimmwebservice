@@ -80,7 +80,7 @@ class IndividualSheet(HTMLPage):
                 output += " | <A HREF=\"/individual/" + str(targetid) + "/descendents\">Descendency Chart</A>\n"
             #if ($AllowGEDDownload): #Should we allow downloads of GedCom - not necessary 100% from file to memory, so not 100% from memory across network
             #    output +=  " | <a href=\"/gedcom/\"?Database=$DB&Subject=$focus&Name=$EncodeName&type=descendants>Extract GEDCOM</a>\n"
-            output += "</B></CENTER><BR>"
+            output += "</B></CENTER>"
             return output
 
         output = self.render_header()

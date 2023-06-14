@@ -38,6 +38,9 @@ class HTMLPage:
         if self.tree.contactemail:
             output += "</A>"
         output += "\n<HR>Created by GIMMWebService " + self.tree.gimmversion + "<BR>\n"
-        output += "Copyright 2023 &copy <A HREF=\"http://github.com/mmgroat\">Michael Groat</A><BR><BR>\n"
+        output += "Copyright 2023 &copy <A HREF=\"http://github.com/mmgroat\">Michael Groat</A><BR>\n"
+        output += "Like what you see? Any support is appreciated!<br>\n"
+        output += "<a href=\"https://www.paypal.com/donate/?business=YLBFKLXCCKRH6&no_recurring=0&item_name=printVeryLargeTextPedigrees+-+Donations+are+appreciated%21&currency_code=USD\""
+        output += "><img src=\"https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif\" alt=\"Paypal\"/></a><BR>\n"
         output += "</BODY>\n</HTML>\n"
         return output

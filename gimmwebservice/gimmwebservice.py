@@ -24,6 +24,7 @@ from flask import request
 # local imports
 from classes.tree import Fam, Tree
 from classes.pedigree import Pedigree
+from classes.descendents import Descendents
 from classes.individualsheet import IndividualSheet
 from classes.gedcom import Gedcom
 from classes.masterindex import MasterIndex
@@ -117,6 +118,7 @@ tree.sources = ged.sour
 tree.notes = ged.note
 # tree.reset_num_no_fid(self)
 pedigrees = Pedigree(tree)
+descendents = Descendents(tree)
 individualsheets = IndividualSheet(tree)
 masterindex = MasterIndex(tree)
 masterindexoutput = masterindex.render()
@@ -135,6 +137,11 @@ sys.stdout.flush()
 def get_backgroundimage():
     return app.send_static_file('background.jpg')
 
+@app.get('/individual/<indi_num>')
+@app.get('/individual/<indi_num>/')
+def get_individual_sheet(indi_num):
+   return individualsheets.render(int(indi_num))
+
 @app.get('/individual/<indi_num>/pedigree')
 def get_pedigree(indi_num):
    maxlevel = request.args.get('maxlevel')
@@ -146,9 +153,16 @@ def get_pedigree(indi_num):
            maxlevel = -1
    return pedigrees.render(int(indi_num), maxlevel)
 
-@app.get('/individual/<indi_num>')
-def get_individual_sheet(indi_num):
-   return individualsheets.render(int(indi_num))
+@app.get('/individual/<indi_num>/descendents')
+def get_descendents(indi_num):
+   maxlevel = request.args.get('maxlevel')
+   if maxlevel is None:
+       maxlevel = 198 # 200 shows on chart
+   else:
+       maxlevel = int(maxlevel) - 2
+       if maxlevel < -1:
+           maxlevel = -1
+   return descendents.render(int(indi_num), maxlevel)
 
 @app.get('/')
 @app.get('/index')
@@ -194,7 +208,6 @@ def put_link():
     # Do we even want to allow links? Seems dangerous nowadays, unless monitored before publish.
     # Could be the start of a wiki tree? How about adding/changing individuals? (WikiTree???)
     return individualsheets.render(int(indi_num)) #testing
-
 
 # start the webserver
 if __name__ == "__main__":
