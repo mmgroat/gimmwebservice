@@ -24,7 +24,7 @@ class Pedigree(HTMLPage):
         def render_collaspe_form() -> str:
             #if (AllowCollaspeAtGeneration):
             output = "<CENTER>"
-            output += "<FORM>Collaspe all branches at select generation level: "
+            output += "<FORM>Collaspe or expand all branches at select generation level: "
             output += "<SELECT name=\"tblofContents\" onChange=\"javascript:formHandler(this)\">"
             output += "<OPTION>Select Depth</OPTION>"
             output += "<OPTION value=\"$MY_NAME=5\">5</OPTION>";
