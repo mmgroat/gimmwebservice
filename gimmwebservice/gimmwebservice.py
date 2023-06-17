@@ -117,21 +117,29 @@ for num in ged.fam:
 tree.sources = ged.sour
 tree.notes = ged.note
 # tree.reset_num_no_fid(self)
+
+# Create information for charts and sheets
 pedigrees = Pedigree(tree)
 descendents = Descendents(tree)
 individualsheets = IndividualSheet(tree)
-masterindex = MasterIndex(tree)
-masterindexoutput = masterindex.render()
-#TODO: Question - Do we want to remove birth and death information for living individuals
-# I've had people contact me in the past requesting this info not be posted.
-# Perhaps an option for public/private tree viewing?
-#if args.public == True:
-#    tree = tree.privatize()
 
-#TODO: Do we want to be able to put photos here? How does a photo work in a text pedigree?
+# Since this is more or less a static page - generate a string of the page when parsing GEDCOM and just 
+# send it on request, don't regenerate the string 
+masterindex = MasterIndex(tree)
+masterindexoutput = masterindex.render_master()
+subindexoutput = []
+for x in range(masterindex.magicnum):
+    subindexoutput.append(masterindex.render_submaster(x))
 
 print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
 sys.stdout.flush()
+
+#TODO: Question - Do we want to remove birth and death information for living individuals
+# I've had people contact me in the past requesting this info not be posted.
+# Perhaps an option for public/private tree viewing?
+# if args.public == True:
+#    tree = tree.privatize()
+#TODO: Do we want to put photos here? How would a photo work in a text pedigree?
 
 @app.get('/images/background')
 def get_backgroundimage():
@@ -168,46 +176,56 @@ def get_descendents(indi_num):
 @app.get('/index')
 @app.get('/index/')
 def get_main_index():
-    # Since this is more or less a static page - generate a string of the page when parsing GEDCOM and just send it on request, 
-    # don't regenerate the string 
-    return masterindexoutput # testing
+    return masterindexoutput 
 
 @app.get('/index/<index_num>')
+@app.get('/index/<index_num>/')
 def get_sub_index(index_num):
-    # Since these are more or less static pages - generate strings for each sub index page when parsing GEDCOM and just send each on request, 
-    # don't regenerate any strings, 
-    return masterindexoutput # testing
+    return subindexoutput[int(index_num)]
 
 @app.get('/accesslog')
 def get_access_log():
-    # TODO: Need to record accesses (Are there going to be persistent?)
-    return individualsheets.render(int(indi_num)) #testing
+    # TODO: Need to record accesses (Are these going to be persistent?)
+    return individualsheets.render(1) #testing
 
 @app.get('/counters')
 def get_counters():
-    # maybe put these somewhere else in another page?
-    return individualsheets.render(int(indi_num)) #testing
+    # TODO: maybe put these at the bottom of all pages?
+    return individualsheets.render(1) #testing
 
 @app.get('/guestbook')
 def get_guestbook():
-    # Do we want to have a guestbook, and perhaps make it persistent?
-    return individualsheets.render(int(indi_num)) #testing
+    # TODO: Do we want to have a persistent guestbook?
+    return individualsheets.render(1) #testing
 
-@app.get('/search')
-def search():
-    # Do we want all searches to go here? String search and name seach?
-    return individualsheets.render(int(indi_num)) #testing
+@app.get('/searchnames')
+def search_names():
+    # TODO: search names in individuals
+    return individualsheets.render(1) #testing
 
-@app.get('/download')
-def get_gedcom():
-    # Do we want to download seperate branchs?
-    return individualsheets.render(int(indi_num)) #testing
+@app.get('/searchstrings')
+def search_strings():
+    # search for string in all text (all notes/sources/place/dates, etc)
+    return individualsheets.render(1) #testing
 
-@app.get('/createlink')
-def put_link():
-    # Do we even want to allow links? Seems dangerous nowadays, unless monitored before publish.
-    # Could be the start of a wiki tree? How about adding/changing individuals? (WikiTree???)
-    return individualsheets.render(int(indi_num)) #testing
+#@app.get('/extract')
+#def get_gedcom():
+    # Do we want to download seperate branchs off the underlying GEDCOM? Note, we are going from a 
+    # GEDCOM to Memory that's not a 100% translation, then going from that back to GEDCOM. It's 
+    # currently not a 100% translation, so do we want to include or get it up to 100%
+#    return individualsheets.render(1) #testing
+
+#@app.get('/createlink')
+#def put_link():
+    # Do we even want to allow links? Seems dangerous nowadays to allow writes to a webstie, unless 
+    # it's monitored before it's publish. This could be the start of a wiki tree? How about 
+    # adding/changing individuals? (like WikiTree?) Where people could log in and up load their 
+    # individiual GEDCOMS, and perhaps everyone merges them into a One-World-Family-Tree. (I know 
+    # this already has been done and it would take a team of engineers. For now, I'm focusing on 
+    # Genealogy aids to assist with personal research. So focus on -- a GEDCOM to web server that 
+    # specializes in fast and efficient collaspable pedigree and descendency charts of greater than 
+    # 100k individuals. --)
+ #   return individualsheets.render(1) #testing
 
 # start the webserver
 if __name__ == "__main__":

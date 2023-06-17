@@ -1,7 +1,9 @@
 # Class Descendents
 # Original Author: Michael Groat
 # 5/27/2023
+
 #from ordered_set import OrderedSet
+
 from classes.constants import (
     FACT_TYPES,
     MAX_GENERATIONS,
@@ -54,30 +56,37 @@ class Descendents(HTMLPage):
             return output
 
         def render_recursive(targetid, level) -> str:
+
+            def render_individual(targetid, indent, level) -> str:
+                output = indent + str(level) + " <A HREF=\"/individual/" + str(targetid) + "\">" + \
+                    self.tree.indi[targetid].name.pretty_print() + "</A>  " 
+                if not has_appeared:
+                    output += self.tree.indi[targetid].pretty_print_birth() + "  "
+                    output += self.tree.indi[targetid].pretty_print_death()
+                else:
+                    previouslinenumber = linenumberbytargetid[targetid]
+                    output += " (individual has previously appeared, "
+                    output += "<A HREF=\"#" + str(previouslinenumber) + "\">click here to view)</A>"
+                output += "\n"
+                return output
+
             output = ""
             indent = ""
             has_appeared = targetid in appeared_in_descendency
             if not has_appeared:
                 appeared_in_descendency.add(targetid)
             for _ in range(level):
-                indent += "  "
+                indent += "    "
             if not has_appeared:
                 output += "<A NAME=\"" + str(linenumber) + "\"></A>";
                 linenumberbytargetid[targetid] = linenumber
-            output += indent + str(level) + " " + self.tree.indi[targetid].name.pretty_print() + "  "
-            if not has_appeared:
-                output += self.tree.indi[targetid].pretty_print_birth() + "  "
-                output += self.tree.indi[targetid].pretty_print_death()
-            else:
-                previouslinenumber = linenumberbytargetid[targetid]
-                output += " (individual has previously appeared, "
-                output += "<A HREF=\"#" + str(previouslinenumber) + "\">click here to view)</A>"
-            output += "\n"
+            output += render_individual(targetid, indent, level)            
             if has_appeared:
                 return output
             for spouse in self.tree.indi[targetid].spouses:
                 if spouse:
-                    output += indent + " + " + self.tree.indi[spouse].name.pretty_print() + "  "
+                    output += indent + "  + <A HREF=\"/individual/" + str(targetid) + "\">" + \
+                        self.tree.indi[spouse].name.pretty_print() + "</A>  "
                     output += self.tree.indi[spouse].pretty_print_birth() + "  "
                     output += self.tree.indi[spouse].pretty_print_death()
                     output += "\n"
