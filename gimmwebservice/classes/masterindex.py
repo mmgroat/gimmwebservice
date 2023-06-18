@@ -63,6 +63,10 @@ class MasterIndex(HTMLPage):
                 individualsublist[indi].name.given + "</B></A> " + \
                 individualsublist[indi].pretty_print_birth() + \
                 individualsublist[indi].pretty_print_death() + "<BR>\n"                
-        output += "</ul></ul>\n"        
+        output += "</ul></ul>\n"   
+        if submasternum > 0:
+            output += "<A HREF=\"/index/" + str(submasternum - 1) + "\">Pervious Index Page</A><BR>\n"
+        if submasternum < self.magicnum - 1:
+            output += "<A HREF=\"/index/" + str(submasternum + 1) + "\">Next Index Page</A><BR>\n"
         output += self.render_footer()
         return output

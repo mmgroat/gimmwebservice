@@ -20,6 +20,7 @@ import traceback
 from datetime import datetime
 from flask import Flask
 from flask import request
+from flask import abort
 
 # local imports
 from classes.tree import Fam, Tree
@@ -181,7 +182,13 @@ def get_main_index():
 @app.get('/index/<index_num>')
 @app.get('/index/<index_num>/')
 def get_sub_index(index_num):
-    return subindexoutput[int(index_num)]
+    try:
+        index_num_int = int(index_num)
+    except ValueError as e:
+        abort(404)
+    if ((index_num_int < 0) or (index_num_int > len(subindexoutput) - 1)):
+        abort(404) 
+    return subindexoutput[int(index_num_int)]
 
 @app.get('/accesslog')
 def get_access_log():
