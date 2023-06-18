@@ -16,13 +16,6 @@ class IndividualSheet(HTMLPage):
 
     def render(self, targetid) -> str:
 
-        # Data structures and primatives
-        superscriptindex = 0
-        sources = OrderedSet() # TODO we want an ordered set and we want position in the set for repeated sources
-
-        # rename indexed array position for shorter variable name
-        targetindi = self.tree.indi[targetid]
-
         def handle_facts(facts_name, facts) -> str:
             output = ""
             for fact in facts:
@@ -83,6 +76,13 @@ class IndividualSheet(HTMLPage):
             output += "</B></CENTER>"
             return output
 
+        # Data structures and primatives
+        superscriptindex = 0
+        sources = OrderedSet() # TODO we want an ordered set and we want position in the set for repeated sources
+
+        # rename indexed array position for shorter variable name
+        targetindi = self.tree.indi[targetid]
+
         output = self.render_header()
 
         # Output Header Name
@@ -140,7 +140,7 @@ class IndividualSheet(HTMLPage):
 
                 # BUG? Note, may have found a bug in getmyancestors parsing GEDCOM - what if multiple spouses that are unknown. Do 
                 # children get added to the same family that is indexed by (spouse_id, None)?
-                output += "<em>Family " + str(i + 1) + ":</em> <A HREF=/individuals/" + str(spouseid) + ">" + spouseindi.name.pretty_print() + "</A>," 
+                output += "<em>Family " + str(i + 1) + ":</em> <A HREF=/individual/" + str(spouseid) + ">" + spouseindi.name.pretty_print() + "</A>," 
                 output += spouseindi.pretty_print_birth() + " &nbsp;&nbsp;" + spouseindi.pretty_print_death() + "<ul>\n"
                 # output marriage information:
                 marriage_info_set = targetindi.pretty_print_all_marriage_facts_by_spouseid(spouseid, self.tree) 

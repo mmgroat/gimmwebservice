@@ -17,31 +17,32 @@ class Pedigree(HTMLPage):
   
     def render(self, targetid, maxlevel = MAX_GENERATIONS) -> str:
         """print collaspable pedigree chart in html from tree objet for target individual"""
-        linenumber = 0
-        if maxlevel is None:
-            maxlevel = MAX_GENERATIONS
-            
+
+        def render_title() -> str:
+            output = "<H1>Ancestors of " + self.tree.indi[targetid].name.pretty_print() + "</H1>\n"
+            return output
+
         def render_collaspe_form() -> str:
             #if (AllowCollaspeAtGeneration):
-            output = "<CENTER>"
-            output += "<FORM>Collaspe or expand all branches at select generation level: "
-            output += "<SELECT name=\"tblofContents\" onChange=\"javascript:formHandler(this)\">"
-            output += "<OPTION>Select Depth</OPTION>"
-            output += "<OPTION value=\"$MY_NAME=5\">5</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=10\">10</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=15\">15</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=20\">20</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=25\">25</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=30\">30</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=35\">35</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=40\">40</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=45\">45</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=50\">50</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=55\">55</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=60\">60</OPTION>";
-            output += "<OPTION value=\"$MY_NAME=200\">200</OPTION>";
-            output += "</SELECT></FORM>";
-            output += "</CENTER>";
+            output = "<CENTER>\n"
+            output += "<FORM>Collaspe or expand all branches at select generation level: \n"
+            output += "<SELECT name=\"tblofContents\" onChange=\"javascript:formHandler(this)\">\n"
+            output += "<OPTION>Select Depth</OPTION>\n"
+            output += "<OPTION value=\"maxlevel=5\">5</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=10\">10</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=15\">15</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=20\">20</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=25\">25</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=30\">30</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=35\">35</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=40\">40</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=45\">45</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=50\">50</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=55\">55</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=60\">60</OPTION>\n";
+            output += "<OPTION value=\"maxlevel=200\">200</OPTION>\n";
+            output += "</SELECT></FORM>\n";
+            output += "</CENTER>\n";
             return output
 
         def render_menu(targetid) -> str:
@@ -73,7 +74,7 @@ class Pedigree(HTMLPage):
             output = ""
             output += build_ancestors_line_number_var()
             output += "   function formHandler(thisItem) {\n"
-            output += "      var URL = '/Genealogy/igmped.cgi/n' + thisItem.options[thisItem.selectedIndex].value + '?$focus'; "
+            output += "      var URL = '/individual/" + str(targetid) + "/pedigree?' + thisItem.options[thisItem.selectedIndex].value; \n"
             output += "      if(URL != \"\"){ window.location.href = URL; } \n"
             output += "   }\n"
             output += "   function hidebranches(line_num, main,closeorexpand = 0) {\n"
@@ -262,17 +263,20 @@ class Pedigree(HTMLPage):
             ancestors_line_numbers[templinenumber] = [fatherlinenumber, motherlinenumber]
             return (templinenumber, output)
         
-        output = self.render_header() # would this make more sense to call from an HTMLFactory object?
+        if maxlevel is None:
+            maxlevel = MAX_GENERATIONS
+        output = self.render_header() 
         output += render_menu(targetid)
-        output += "<H1>Ancestors of " + self.tree.indi[targetid].name.pretty_print() + "</H1>\n"
-        output += "<pre><div id='DivID1'>"
+        output += render_title()
         appeared_in_pedigree = set()
         ancestors_line_numbers = dict()
+        linenumber = 0
+        output += "<pre><div id='DivID1'>"
         _, recursiveoutput = render_recursive(targetid, -1, False, 0)
-        appeared_in_pedigree.clear()
         output += recursiveoutput
         output += "\n</div></pre>\n"
         output += "<HR>\n"
+        appeared_in_pedigree.clear()
         output += render_menu(targetid)
         output += render_script()
         ancestors_line_numbers.clear()
