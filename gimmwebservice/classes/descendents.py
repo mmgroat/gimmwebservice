@@ -73,6 +73,18 @@ class Descendents(HTMLPage):
             output += "            next_plus = z.innerHTML;\n"
             output += "            if (next_plus != \"+\") {\n"
             output += "               toggle(z, closeorexpand);\n"
+            output += "            } else {\n"
+            output += "               // go to next line outside of this level\n"
+            output += "               sub_level = next_level;\n"
+            output += "               sub_isMarr = next_marr;\n"
+            output += "               next_line_num = next_line_num + 1;\n"
+            output += "               while ((z = document.getElementById(\"DivID\" + next_line_num)) != null) {\n"
+            output += "                  next_sub_level = parseInt(z.getAttribute(\"data-level\"));\n"
+            output += "                  next_sub_marr  = parseInt(z.getAttribute(\"data-marr\"));\n"
+            output += "                  if ((next_sub_level > sub_level) || (sub_isMarr == 1 && next_sub_level == sub_level && next_sub_marr == \"1\")) {\n"
+            output += "                     break;\n"
+            output += "                  }\n"
+            output += "               }\n"
             output += "            }\n"
             output += "         } else {\n"
             output += "            break;\n"
@@ -123,7 +135,7 @@ class Descendents(HTMLPage):
             has_appeared = targetid in appeared_in_descendency
             if not has_appeared:
                 appeared_in_descendency.add(targetid)
-            for _ in range(level):
+            for _ in range(level - 1):
                 indent += "    "
             nonlocal linenumber
             linenumber += 1
