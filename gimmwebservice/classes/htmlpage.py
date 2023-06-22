@@ -22,8 +22,8 @@ class HTMLPage:
         output += "<BODY BACKGROUND=\"/images/background\" BGCOLOR=\"" + self.backgroundcolor 
         output += "\" TEXT=\"#000000\" LINK=\"" + self.linkcolor + "\" VLINK=\"" + self.visitedlinkcolor + "\">\n"
         output += "<CENTER><H2>" + title + "</H2></CENTER>\n";
-        output += "<CENTER><B>Individuals:</B> " + str(len(self.tree.indi)) + "&nbsp;&nbsp;"
-        output += "<B>Families:</B> " + str(len(self.tree.fam)) + "&nbsp;&nbsp;"
+        output += "<CENTER><B>Individuals:</B> " + f"{len(self.tree.indi):,}" + "&nbsp;&nbsp;"
+        output += "<B>Families:</B> " + f"{len(self.tree.fam):,}" + "&nbsp;&nbsp;"
         output += "<BR><B>Gedcom Last Modified:</B> " + str(self.tree.lastmodifiedtime) + "</CENTER>\n<HR>\n"
         #output += "<CENTER><B>Contact:</B> <A href=\"" + contact_email + "\">Michael M. Groat</A> &nbsp;&nbsp; "
         #output += "<B>Home Page:</B> <A href=\"" + home_page_url + "\">" + self.indi[1].name.pretty_print() + "'s Homepage</A></CENTER>"
@@ -39,8 +39,10 @@ class HTMLPage:
             output += "</A>"
         output += "\n<HR>Created by GIMMWebService " + self.tree.gimmversion + "<BR>\n"
         output += "Copyright 2023 &copy <A HREF=\"http://github.com/mmgroat\">Michael Groat</A><BR>\n"
-        output += "Like what you see? Any support is appreciated!<br>\n"
+        output += "Like the program that you see?<br><br>\n"
         output += "<a href=\"https://www.paypal.com/donate/?business=YLBFKLXCCKRH6&no_recurring=0&item_name=printVeryLargeTextPedigrees+-+Donations+are+appreciated%21&currency_code=USD\""
-        output += "><img src=\"https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif\" alt=\"Paypal\"/></a><BR><BR><BR>\n"
+        output += "><img src=\"https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif\" alt=\"Paypal\"/></a><BR><BR>\n"
+        output += "Any support is appreciated!\n"
+        output += "<BR><BR><BR>\n"
         output += "</BODY>\n</HTML>\n"
         return output

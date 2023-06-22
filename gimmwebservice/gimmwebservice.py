@@ -152,6 +152,7 @@ def get_individual_sheet(indi_num):
    return individualsheets.render(int(indi_num))
 
 @app.get('/individual/<indi_num>/pedigree')
+@app.get('/individual/<indi_num>/pedigree/')
 def get_pedigree(indi_num):
    maxlevel = request.args.get('maxlevel')
    if maxlevel is None:
@@ -163,6 +164,7 @@ def get_pedigree(indi_num):
    return pedigrees.render(int(indi_num), maxlevel)
 
 @app.get('/individual/<indi_num>/descendents')
+@app.get('/individual/<indi_num>/descendents/')
 def get_descendents(indi_num):
    maxlevel = request.args.get('maxlevel')
    if maxlevel is None:

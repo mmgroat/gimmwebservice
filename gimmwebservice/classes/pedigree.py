@@ -54,7 +54,6 @@ class Pedigree(HTMLPage):
             #    output +=  " | <a href=\"/gedcom/\"?Database=$DB&Subject=$focus&Name=$EncodeName&type=descendants>Extract GEDCOM</a>\n"
             output += "</B></CENTER><BR>"
             output += render_collaspe_form()
-            output += "<HR>\n"
             return output
             
         def render_script() -> str:
@@ -129,6 +128,48 @@ class Pedigree(HTMLPage):
             output += "        } else {\n";
             output += "           x.style.display = 'inline';\n"
             output += "        }\n"
+            output += "      }\n"
+            output += "   }\n"
+            output += "   function over(line_num) {\n"
+#            output += "      var x_div = document.getElementById(\"DivID\" + line_num);\n"
+#            output += "      x_div.style.backgroundColor = '#808080';\n"
+            output += "      var xbutton = document.getElementById(\"ButtonID\" + line_num );\n"
+            output += "      if (xbutton != null) {\n"
+            output += "         xbutton.style.backgroundColor = '#808080';\n"
+            output += "         var x = xbutton.innerHTML;\n"
+            output += "         if (x == \"+\") {\n" 
+            output += "            return;\n"            
+            output += "         } else {\n"
+            output += "            var father_line_number = ancestors_line_number[line_num][0];\n"
+            output += "            if (father_line_number > 0) {\n"
+            output += "               over(father_line_number);\n"  
+            output += "            }\n"
+            output += "            var mother_line_number = ancestors_line_number[line_num][1];\n"
+            output += "            if (mother_line_number > 0) {\n"
+            output += "               over(mother_line_number);\n"  
+            output += "            }\n"
+            output += "         }\n"
+            output += "      }\n"
+            output += "   }\n"
+            output += "   function myout(line_num) {\n"
+#            output += "      var x_div = document.getElementById(\"DivID\" + line_num);\n"
+#            output += "      x_div.style.backgroundColor = '';\n"
+            output += "      var xbutton = document.getElementById(\"ButtonID\" + line_num );\n"
+            output += "      if (xbutton != null) {\n"
+            output += "         xbutton.style.backgroundColor = '';\n"
+            output += "         var x = xbutton.innerHTML;\n"
+            output += "         if (x == \"+\") {\n" 
+            output += "            return;\n"            
+            output += "         } else {\n"
+            output += "            var father_line_number = ancestors_line_number[line_num][0];\n"
+            output += "            if (father_line_number > 0) {\n"
+            output += "               myout(father_line_number);\n"  
+            output += "            }\n"
+            output += "            var mother_line_number = ancestors_line_number[line_num][1];\n"
+            output += "            if (mother_line_number > 0) {\n"
+            output += "               myout(mother_line_number);\n"  
+            output += "            }\n"
+            output += "         }\n"
             output += "      }\n"
             output += "   }\n"
             output += "</script>\n"
@@ -215,7 +256,9 @@ class Pedigree(HTMLPage):
                 output += "-- "
                 
                 if len(indi.parents):
-                    output += "<button id=\"ButtonID" + str(linenumber) + "\" onclick=\"hidebranches(" + str(linenumber) + ",1)\">-</button> "
+                    output += "<button id=\"ButtonID" + str(linenumber) + "\"" + \
+                        " onclick=\"hidebranches(" + str(linenumber) + ",1)\"" + " onmouseover=\"over(" + str(linenumber) + ")\"" + \
+                        " onmouseout =\"myout(" + str(linenumber) + ")\"" + ">-</button> "
                 output += str(level + 1) + " <A HREF=/individual/" + str(indi.num) + "><B>" + indi.name.pretty_print() + "</B></A>" # do we want self.fid instead of self.num later?
                 if (has_appeared):
                     output += " <A HREF=\"#" + str(indi.num) + "\">(Person is repeated, click here)</A>"
@@ -267,6 +310,7 @@ class Pedigree(HTMLPage):
             maxlevel = MAX_GENERATIONS
         output = self.render_header() 
         output += render_menu(targetid)
+        output += "<HR>\n"
         output += render_title()
         appeared_in_pedigree = set()
         ancestors_line_numbers = dict()

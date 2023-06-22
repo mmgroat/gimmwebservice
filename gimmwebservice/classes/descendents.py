@@ -81,7 +81,8 @@ class Descendents(HTMLPage):
             output += "               while ((q = document.getElementById(\"DivID\" + next_line_num)) != null) {\n"
             output += "                  next_sub_level = parseInt(q.getAttribute(\"data-level\"));\n"
             output += "                  next_sub_marr  = parseInt(q.getAttribute(\"data-marr\"));\n"
-            output += "                  if ((next_sub_level > sub_level) || (sub_isMarr == 0 && next_sub_level == sub_level && next_sub_marr == 1)) {\n"
+            output += "                  if ((next_sub_level > sub_level) || \n"
+            output += "                      (sub_isMarr == 0 && next_sub_level == sub_level && next_sub_marr == 1)) {\n"
             output += "                     next_line_num = next_line_num + 1;\n"
             output += "                  } else {\n"
             output += "                     break;\n"
@@ -104,6 +105,14 @@ class Descendents(HTMLPage):
             output += "        }\n"
             output += "      }\n"
             output += "   }\n"
+            output += "   function over(line_num) {\n"
+            output += "      var x = document.getElementById(\"DivID\" + line_num );\n"
+            output += "      x.style.backgroundColor = '#808080';\n"
+            output += "    }\n"
+            output += "    function myout(line_num) {\n"
+            output += "       var x = document.getElementById(\"DivID\" + line_num );\n"
+            output += "       x.style.backgroundColor = '';\n"
+            output += "    }\n"
             output += "</script>\n"
             return output
 
@@ -118,7 +127,7 @@ class Descendents(HTMLPage):
             #   output +=  " | <a href=\"/gedcom/\"$focus&Name=$EncodeName&type=descendants>Extract GEDCOM</a>\n"
             output += "</B></CENTER><BR>"
             output += render_collaspe_form()
-            output += "<HR>\n"
+            output += "\n"
             return output
 
         def render_recursive(targetid, level) -> str:
@@ -136,7 +145,7 @@ class Descendents(HTMLPage):
                 return output
      
             output = ""
-            indent = ""
+            indent = "\t"
             has_appeared = targetid in appeared_in_descendency
             if not has_appeared:
                 appeared_in_descendency.add(targetid)
@@ -146,8 +155,10 @@ class Descendents(HTMLPage):
             linenumber += 1
             output += "<div id='DivID" + str(linenumber) + "' data-level='" + str(level) + \
                     "' data-marr='0'>" 
-            output += "<button id=\"ButtonID" + str(linenumber) + "\" onclick=\"hidebranches(" + \
-                str(linenumber) + ",1)\">-</button> "
+            output += "<button id=\"ButtonID" + str(linenumber) + "\"" + \
+                " onclick=\"hidebranches(" + str(linenumber) + ",1)\"" + " onmouseover=\"over(" + str(linenumber) + ")\"" + \
+                " onmouseout =\"myout(" + str(linenumber) + ")\"" + \
+                ">-</button> "
             if not has_appeared:
                 output += "<A NAME=\"" + str(linenumber) + "\"></A>";
                 linenumberbytargetid[targetid] = linenumber
@@ -160,9 +171,11 @@ class Descendents(HTMLPage):
                 spouse_num = spouse_num + 1
                 linenumber = linenumber + 1
                 output += "<div id='DivID" + str(linenumber) + "' data-level='" + str(level) + \
-                        "' data-marr='1'>" 
-                output += "<button id=\"ButtonID" + str(linenumber) + "\" onclick=\"hidebranches(" + \
-                        str(linenumber) +",1)\">-</button> "
+                    "' data-marr='1'>" 
+                output += "<button id=\"ButtonID" + str(linenumber) + "\"" + \
+                    " onclick=\"hidebranches(" + str(linenumber) + ",1)\"" + " onmouseover=\"over(" + str(linenumber) + ")\"" + \
+                    " onmouseout =\"myout(" + str(linenumber) + ")\"" + \
+                    ">-</button> "
                 if spouse:
                     output += indent + "  + <A HREF=\"/individual/" + str(spouse) + "\">" + \
                         self.tree.indi[spouse].name.pretty_print() + "</A>  "
