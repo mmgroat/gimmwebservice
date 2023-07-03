@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import sys
 import re
 import time
@@ -71,7 +73,13 @@ class Note:
         """print the reference in GEDCOM format"""
         file.write("%s NOTE @N%s@\n" % (level, self.num))
 
-
+    def pretty_print(self) -> str:
+        output = ""
+        if len(self.text) > 0:
+            output += "<li><em>Notes:</em><blockquote>\n"
+            output += self.text.replace("\n","<BR>\n") + "</blockquote>\n"
+        return output
+ 
 class Source:
     """GEDCOM Source class
     :param data: FS Source data
@@ -629,6 +637,33 @@ class Indi:
             if father == spouseid or mother == spouseid:
                 output.add(child)
         return output
+    
+    def search(self, terms, isor, islower, searchwhat) -> bool:
+      
+        # Creat set of terms to search
+        searchlist = list([self.name]) + list(self.birthnames) + list(self.nicknames)
+        if searchwhat == "Names or Facts" or searchwhat == "Names or Facts or Notes":
+            searchlist += list(self.facts)
+        if searchwhat == "Names or Facts or Notes":
+            searchlist += list(self.notes)
+
+        # Search each item for each term
+        matched = False
+        for item in searchlist:
+            if (isinstance(item, tuple)):
+                ppitem = item[0].pretty_print()
+            else:
+                ppitem = item.pretty_print()
+            for term in terms:
+                if islower:
+                    matched = (term.lower() in ppitem.lower())
+                else:
+                    matched = term in ppitem
+                if (matched if isor else not matched):
+                    break
+            if matched:
+                break
+        return matched
 
 class Fam:
     """GEDCOM family class

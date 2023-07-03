@@ -49,8 +49,7 @@ class IndividualSheet(HTMLPage):
         def handle_notes(notes) -> str:
             output = ""
             for note in notes:
-                output += "<li><em>Notes:</em><blockquote>\n"
-                output += note.text.replace("\n","<BR>\n") + "</blockquote>\n"
+                output += note.pretty_print()
             return output
 
         def handle_sources() -> str:    

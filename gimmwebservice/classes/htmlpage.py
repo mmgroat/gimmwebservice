@@ -37,12 +37,13 @@ class HTMLPage:
         output += self.tree.indi[1].name.pretty_print()
         if self.tree.contactemail:
             output += "</A>"
-        output += "\n<HR>Created by GIMMWebService " + self.tree.gimmversion + "<BR>\n"
-        output += "Copyright 2023 &copy <A HREF=\"http://github.com/mmgroat\">Michael Groat</A><BR>\n"
-        output += "Like the program that you see?<br><br>\n"
+        output += "\n<HR>Created by GIMMWebService " + self.tree.gimmversion 
+        output += ", Copyright 2023 &copy <A HREF=\"http://github.com/mmgroat\">Michael Groat</A><BR>\n"
+        output += "(Web design layout and pedigree indentation subroutine) Copyright 1996 &copy; Randy Winch (gumby@edge.net) and Tim Doyle (tdoyle@doit.com)<BR>\n"
+        output += "(Internal GEDCOM data structures and GEDCOM file parsing) Copyright 2014-2021 &copy; Giulio Genovese (giulio.genovese@gmail.com)<BR><BR>\n"
+        output += "Like the program that you see? Any support is appreciated!<br><br>\n"
         output += "<a href=\"https://www.paypal.com/donate/?business=YLBFKLXCCKRH6&no_recurring=0&item_name=printVeryLargeTextPedigrees+-+Donations+are+appreciated%21&currency_code=USD\""
         output += "><img src=\"https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif\" alt=\"Paypal\"/></a><BR><BR>\n"
-        output += "Any support is appreciated!\n"
         output += "<BR><BR><BR>\n"
         output += "</BODY>\n</HTML>\n"
         return output

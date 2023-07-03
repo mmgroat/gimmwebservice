@@ -5,18 +5,19 @@
 # 5/27/2023
 
 # global imports
-#from __future__ import print_function
-#import re
+# from __future__ import print_function
+# import re
 import sys
-#import time
-#from urllib.parse import unquote
-#import getpass
-#import asyncio
+# from urllib.parse import unquote
+# import getpass
+# import asyncio
 import argparse
 import io
 import os
 import time
 import traceback
+import math
+import collections
 from datetime import datetime
 from flask import Flask
 from flask import request
@@ -29,13 +30,15 @@ from classes.descendents import Descendents
 from classes.individualsheet import IndividualSheet
 from classes.gedcom import Gedcom
 from classes.masterindex import MasterIndex
-#from classes.subindexes import SubIndexes
-#from classes.session import Session
+from classes.searchgedcom import SearchGedcom
+from classes.surnames import Surnames
+from classes.log import Log
 
 app = Flask(__name__)
 debug = True
 
 print("Starting parsing of GEDCOM")
+time_count = time.time()
 
 parser = argparse.ArgumentParser(
     description="Create webservice from local gedcom file to serve genealogical HTML pages (May 21 2023)",
@@ -79,7 +82,6 @@ except SystemExit as e:
     sys.exit(2)
 
 # Load GedCom from file in a NonFS tree (doesn't assume FIDs exist)
-time_count = time.time()
 if not args.gedcom_input_file:
     sys.stderr.write("A GEDCOM file is required to run this webservice\n")
     sys.exit(2)
@@ -88,7 +90,7 @@ tree = Tree()
 ged = Gedcom(args.gedcom_input_file, tree)
 tree.lastmodifiedtime = datetime.fromtimestamp(os.path.getmtime(args.gedcom_input_file.name)).strftime('%B %d, %Y %H:%M:%S')
 tree.contactemail = args.email
-tree.gimmversion = "Version 0.01 (<A HREF=\"http://github.com/mmgroat/gimmwebservice\">Program Information</A>)"
+tree.gimmversion = "Version 0.0.2 (<A HREF=\"http://github.com/mmgroat/gimmwebservice\">Program Information</A>)"
 fam_counter = 0
 tree.indi = ged.indi
 # Add parent information (to any GEDCOM (assume non FS))
@@ -119,28 +121,40 @@ tree.sources = ged.sour
 tree.notes = ged.note
 # tree.reset_num_no_fid(self)
 
-# Create information for charts and sheets
+# Create information for charts, sheets, indexes and search pages
 pedigrees = Pedigree(tree)
 descendents = Descendents(tree)
 individualsheets = IndividualSheet(tree)
+searchgedcom = SearchGedcom(tree)
+logs = Log(tree)
 
-# Since this is more or less a static page - generate a string of the page when parsing GEDCOM and just 
-# send it on request, don't regenerate the string 
+# Since these are more or less static pages - generate a string of each page and just 
+# send that on request, don't regenerate the strings for each request 
+tree.sorted_individuals = collections.OrderedDict(sorted(tree.indi.items(), key=lambda x:(x[1].name.surname, x[1].name.given)))
+tree.magicnum = math.ceil(math.sqrt(len(tree.indi)))
+surnames = Surnames(tree)
+surnamesoutput = surnames.render()
 masterindex = MasterIndex(tree)
 masterindexoutput = masterindex.render_master()
 subindexoutput = []
-for x in range(masterindex.magicnum):
+for x in range(tree.magicnum):
     subindexoutput.append(masterindex.render_submaster(x))
 
-print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
-sys.stdout.flush()
-
-#TODO: Question - Do we want to remove birth and death information for living individuals
+#TODO: Question - Do we want to remove birth and death information for living individuals here?
 # I've had people contact me in the past requesting this info not be posted.
 # Perhaps an option for public/private tree viewing?
 # if args.public == True:
 #    tree = tree.privatize()
+
 #TODO: Do we want to put photos here? How would a photo work in a text pedigree?
+
+print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
+sys.stdout.flush()
+
+# Define Endpoints:
+@app.get('/favicon.ico')
+def get_iconimage():
+    return app.send_static_file('favicon.ico')
 
 @app.get('/images/background')
 def get_backgroundimage():
@@ -192,29 +206,30 @@ def get_sub_index(index_num):
         abort(404) 
     return subindexoutput[int(index_num_int)]
 
-@app.get('/accesslog')
-def get_access_log():
-    # TODO: Need to record accesses (Are these going to be persistent?)
-    return individualsheets.render(1) #testing
+@app.get('/search')
+@app.post('/search')
+def search_gedcom():
+    return searchgedcom.render()
 
+@app.get('/surnames')
+def get_surnames():
+    return surnamesoutput
+
+# TODO:
+@app.get('/logs')
+def get_access_log():
+    return logs.render()
+
+# TODO:
 @app.get('/counters')
 def get_counters():
     # TODO: maybe put these at the bottom of all pages?
     return individualsheets.render(1) #testing
 
+# TODO:
 @app.get('/guestbook')
 def get_guestbook():
     # TODO: Do we want to have a persistent guestbook?
-    return individualsheets.render(1) #testing
-
-@app.get('/searchnames')
-def search_names():
-    # TODO: search names in individuals
-    return individualsheets.render(1) #testing
-
-@app.get('/searchstrings')
-def search_strings():
-    # search for string in all text (all notes/sources/place/dates, etc)
     return individualsheets.render(1) #testing
 
 #@app.get('/extract')
@@ -222,7 +237,7 @@ def search_strings():
     # Do we want to download seperate branchs off the underlying GEDCOM? Note, we are going from a 
     # GEDCOM to Memory that's not a 100% translation, then going from that back to GEDCOM. It's 
     # currently not a 100% translation, so do we want to include or get it up to 100%
-#    return individualsheets.render(1) #testing
+    # return individualsheets.render(1) #testing
 
 #@app.get('/createlink')
 #def put_link():
@@ -234,7 +249,7 @@ def search_strings():
     # Genealogy aids to assist with personal research. So focus on -- a GEDCOM to web server that 
     # specializes in fast and efficient collaspable pedigree and descendency charts of greater than 
     # 100k individuals. --)
- #   return individualsheets.render(1) #testing
+    # return individualsheets.render(1) #testing
 
 # start the webserver
 if __name__ == "__main__":
