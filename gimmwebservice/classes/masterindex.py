@@ -64,7 +64,7 @@ class MasterIndex(HTMLPage):
             output += "<li><A HREF=\"/individual/" + str(indi) + "\"><B>" + \
                 individualsublist[indi].name.surname + ", " + \
                 individualsublist[indi].name.given + "</B></A> " + \
-                individualsublist[indi].pretty_print_birth() + \
+                individualsublist[indi].pretty_print_birth() + " " + \
                 individualsublist[indi].pretty_print_death() + "<BR>\n"                
         output += "</ul></ul>\n"   
         if submasternum > 0:

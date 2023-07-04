@@ -143,7 +143,7 @@ class Source:
         if self.notes:
             if len(self.notes):
                 for note in self.notes:
-                    output += "Note: " + str(self.note.text) + "<br>"            
+                    output += "Note: " + str(note) + "<br>"            
         return output
 
 class Fact:

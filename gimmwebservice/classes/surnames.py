@@ -15,7 +15,7 @@ class Surnames(HTMLPage):
     def render(self) -> str:
 
         def render_title() -> str:
-            return "<H1>List of Surnames</H1>\n"
+            return "<H1>Surname Index</H1>\n"
      
         output = ""
         output += self.render_header() 

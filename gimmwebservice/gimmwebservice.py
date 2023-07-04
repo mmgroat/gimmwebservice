@@ -37,8 +37,9 @@ from classes.log import Log
 app = Flask(__name__)
 debug = True
 
-print("Starting parsing of GEDCOM")
 time_count = time.time()
+print("Parsing Gedcom")
+sys.stdout.flush()
 
 parser = argparse.ArgumentParser(
     description="Create webservice from local gedcom file to serve genealogical HTML pages (May 21 2023)",
@@ -92,6 +93,8 @@ tree.lastmodifiedtime = datetime.fromtimestamp(os.path.getmtime(args.gedcom_inpu
 tree.contactemail = args.email
 tree.gimmversion = "Version 0.0.2 (<A HREF=\"http://github.com/mmgroat/gimmwebservice\">Program Information</A>)"
 fam_counter = 0
+print("Copying Gedcom results to tree data structure")
+sys.stdout.flush()
 tree.indi = ged.indi
 # Add parent information (to any GEDCOM (assume non FS))
 for person_num in tree.indi:
@@ -122,6 +125,7 @@ tree.notes = ged.note
 # tree.reset_num_no_fid(self)
 
 # Create information for charts, sheets, indexes and search pages
+sys.stdout.flush()
 pedigrees = Pedigree(tree)
 descendents = Descendents(tree)
 individualsheets = IndividualSheet(tree)
@@ -132,13 +136,22 @@ logs = Log(tree)
 # send that on request, don't regenerate the strings for each request 
 tree.sorted_individuals = collections.OrderedDict(sorted(tree.indi.items(), key=lambda x:(x[1].name.surname, x[1].name.given)))
 tree.magicnum = math.ceil(math.sqrt(len(tree.indi)))
+print("Creating and rendering Surnames page")
+sys.stdout.flush()
 surnames = Surnames(tree)
 surnamesoutput = surnames.render()
+print("Creating and rendering master index page")
+sys.stdout.flush()
 masterindex = MasterIndex(tree)
 masterindexoutput = masterindex.render_master()
+print("Creating and rendering sub index pages")
+sys.stdout.flush()
 subindexoutput = []
 for x in range(tree.magicnum):
+    sys.stdout.write(str(x) + "/" + str(tree.magicnum))
+    sys.stdout.flush()
     subindexoutput.append(masterindex.render_submaster(x))
+    sys.stdout.write("\b\b\b\b\b\b\b\b\b\b\b\b\b\b")
 
 #TODO: Question - Do we want to remove birth and death information for living individuals here?
 # I've had people contact me in the past requesting this info not be posted.
@@ -151,7 +164,10 @@ for x in range(tree.magicnum):
 print("Finished parsing GEDCOM into memory in %s seconds." % str(round(time.time() - time_count)))
 sys.stdout.flush()
 
+####################
 # Define Endpoints:
+####################
+
 @app.get('/favicon.ico')
 def get_iconimage():
     return app.send_static_file('favicon.ico')
