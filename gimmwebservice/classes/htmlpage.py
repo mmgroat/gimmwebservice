@@ -2,12 +2,16 @@
 # Original Author - Michael Groat
 # 5/27/2023
 
+from filelock import Timeout, FileLock
+
 class HTMLPage:
 
     def __init__(self):
         self.backgroundcolor = "#BFBFBD" # Should come from config file?
         self.linkcolor = "#0000EE" # Should come from config file?
         self.visitedlinkcolor = "#551A8B" # Should come from config 
+        self.logfilelock = "log.txt.lock"
+        self.logfile = "log.txt"
 
     def render_header(self) -> str:
         """Prints HTML top part of page """
@@ -47,3 +51,9 @@ class HTMLPage:
         output += "<BR><BR><BR>\n"
         output += "</BODY>\n</HTML>\n"
         return output
+    
+    def log(self, logmessage):
+        lock = FileLock(self.logfilelock, timeout=1)
+        with lock:
+            with open(self.logfile, 'a') as file:
+                file.write(logmessage)

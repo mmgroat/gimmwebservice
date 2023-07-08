@@ -135,6 +135,8 @@ logs = Log(tree)
 # Since these are more or less static pages - generate a string of each page and just 
 # send that on request, don't regenerate the strings for each request 
 tree.sorted_individuals = collections.OrderedDict(sorted(tree.indi.items(), key=lambda x:(x[1].name.surname, x[1].name.given)))
+# Put sorted_individuals in a list in order to perform faster slicing in render_submaster (index)
+tree.sorted_individuals_list = list(tree.sorted_individuals.items())
 tree.magicnum = math.ceil(math.sqrt(len(tree.indi)))
 print("Creating and rendering Surnames page")
 sys.stdout.flush()
@@ -148,11 +150,11 @@ print("Creating and rendering sub index pages")
 sys.stdout.flush()
 subindexoutput = []
 for x in range(tree.magicnum):
+    sys.stdout.write("\b\b\b\b\b\b\b\b\b\b\b\b\b\b")
     sys.stdout.write(str(x) + "/" + str(tree.magicnum))
     sys.stdout.flush()
     subindexoutput.append(masterindex.render_submaster(x))
-    sys.stdout.write("\b\b\b\b\b\b\b\b\b\b\b\b\b\b")
-
+sys.stdout.write("\n")
 #TODO: Question - Do we want to remove birth and death information for living individuals here?
 # I've had people contact me in the past requesting this info not be posted.
 # Perhaps an option for public/private tree viewing?
@@ -270,4 +272,4 @@ def get_guestbook():
 # start the webserver
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    app.run(host="0.0.0.0")

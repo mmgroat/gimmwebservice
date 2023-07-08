@@ -4,11 +4,13 @@
 
 #from ordered_set import OrderedSet
 
+import time
+import datetime
+from flask import Flask, request
 from classes.constants import (
     FACT_TYPES,
     MAX_GENERATIONS,
 )
-
 from classes.htmlpage import HTMLPage
 
 class Descendents(HTMLPage):
@@ -138,6 +140,8 @@ class Descendents(HTMLPage):
                 if not has_appeared:
                     output += self.tree.indi[targetid].pretty_print_birth() + "  "
                     output += self.tree.indi[targetid].pretty_print_death()
+                    nonlocal num_displayed_individuals
+                    num_displayed_individuals += 1
                 else:
                     previouslinenumber = linenumberbytargetid[targetid]
                     output += " (individual has previously appeared, "
@@ -189,6 +193,8 @@ class Descendents(HTMLPage):
                          output += render_recursive(child, level + 1)
             return output 
 
+        start_time = time.time()
+        num_displayed_individuals = 0
         if maxlevel is None:
             maxlevel = MAX_GENERATIONS
         output = self.render_header()
@@ -201,10 +207,15 @@ class Descendents(HTMLPage):
         output += "<pre>\n"
         output += render_recursive(targetid,1)
         output += "</pre>\n"
+        output += "Displayed " + str(num_displayed_individuals) + " individuals in "  + \
+            str(round(time.time() - start_time, 7)) + " seconds.<BR>\n"
         linenumberbytargetid.clear()
         appeared_in_descendency.clear()
         output += render_script()
         output += "<HR>\n"
         output += render_menu()
         output += self.render_footer()
+        self.log(str(datetime.datetime.now()) + " Descendency of " + self.tree.indi[targetid].name.pretty_print() + \
+            " accessed by " + str(request.remote_addr) + " using " + str(request.user_agent) + " in " + \
+            str(round(time.time() - start_time, 7)) + " seconds.<BR>\n")
         return output

@@ -26,7 +26,6 @@ class Surnames(HTMLPage):
         previous_first_letter = None
         individual_num = 0
         for indiv in self.tree.sorted_individuals:
-            individual_num += 1
             if len(self.tree.sorted_individuals[indiv].name.surname) > 0 and \
                     self.tree.sorted_individuals[indiv].name.surname != previous_surname:
                 first_letter = self.tree.sorted_individuals[indiv].name.surname[0]
@@ -40,7 +39,7 @@ class Surnames(HTMLPage):
                     "\">" + self.tree.sorted_individuals[indiv].name.surname + "</A>"
                 previous_surname = self.tree.sorted_individuals[indiv].name.surname        
                 previous_first_letter = first_letter
-
+            individual_num += 1
         output += "<BR><A HREF=\"/index\">Return to the master index</A><BR>\n"
         output += self.render_footer()
         return output

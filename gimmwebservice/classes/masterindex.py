@@ -51,12 +51,12 @@ class MasterIndex(HTMLPage):
         output += "<li>View information for the following invidivuals:<br>\n"
         output += "<ul>\n"
         startpersonindex = (self.tree.magicnum * submasternum)
-        endpersonindex = (self.tree.magicnum * submasternum) + self.tree.magicnum - 1
+        endpersonindex = (self.tree.magicnum * submasternum) + self.tree.magicnum - 1 
         if startpersonindex == 0:
             previous_last_name = None
         else:
-            previous_last_name = list(self.tree.sorted_individuals.items()).pop(startpersonindex - 1)[1].name.surname
-        individualsublist = dict(list(self.tree.sorted_individuals.items())[startpersonindex:endpersonindex+1])
+            previous_last_name = self.tree.sorted_individuals_list[startpersonindex - 1][1].name.surname
+        individualsublist = dict(self.tree.sorted_individuals_list[startpersonindex:endpersonindex+1])
         for indi in individualsublist:
             if previous_last_name != individualsublist[indi].name.surname:
                 output += "<A NAME=\"" + individualsublist[indi].name.surname + "\"></A>"
@@ -73,3 +73,8 @@ class MasterIndex(HTMLPage):
             output += "<A HREF=\"/index/" + str(submasternum + 1) + "\">Next Index Page</A><BR>\n"
         output += self.render_footer()
         return output
+    
+
+
+
+     

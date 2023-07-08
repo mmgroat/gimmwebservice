@@ -2,8 +2,10 @@
 # Original Author - Michael Groat
 # 5/27/2023
 
+import time
+import datetime
+from flask import Flask, request
 from classes.htmlpage import HTMLPage
-
 from classes.constants import (
     FACT_TYPES,
     MAX_GENERATIONS,
@@ -218,7 +220,10 @@ class Pedigree(HTMLPage):
                                 output += "c"
                             case "DEAT":
                                 output += "e"
-                        output += "'>|</div><div id='DivID" + str(linenumber)
+                        if ((level - 1) == maxlevel):
+                            output += "'> </div><div id='DivID" + str(linenumber)
+                        else:
+                            output += "'>|</div><div id='DivID" + str(linenumber)
                         match type:
                             case "BIRT":
                                 output += "b"
@@ -258,11 +263,20 @@ class Pedigree(HTMLPage):
                 if len(indi.parents):
                     output += "<button id=\"ButtonID" + str(linenumber) + "\"" + \
                         " onclick=\"hidebranches(" + str(linenumber) + ",1)\"" + " onmouseover=\"over(" + str(linenumber) + ")\"" + \
-                        " onmouseout =\"myout(" + str(linenumber) + ")\"" + ">-</button> "
+                        " onmouseout =\"myout(" + str(linenumber) + ")\"" + ">"
+                    if ((level - 1) == maxlevel):
+                        output += "+"
+                    else:
+                        output += "-"
+                    output += "</button> "
                 output += str(level + 1) + " <A HREF=/individual/" + str(indi.num) + "><B>" + indi.name.pretty_print() + "</B></A>" # do we want self.fid instead of self.num later?
                 if (has_appeared):
                     output += " <A HREF=\"#" + str(indi.num) + "\">(Person is repeated, click here)</A>"
                 else:
+                    nonlocal num_displayed_individuals
+                    num_displayed_individuals += 1
+                    if len(indi.parents) and ((level - 1) == maxlevel):
+                        output += " <A HREF=\"/individual/" + str(indi.num) + "/pedigree\">=></A>"
                     output += "<A NAME=\"" + str(indi.num) + "\"></A>"
                 # TODO: Do we want => in case of max level (to display) (Or do we want a drop down box to collaspe at a certain generation?)
                 output += "\n"
@@ -306,6 +320,8 @@ class Pedigree(HTMLPage):
             ancestors_line_numbers[templinenumber] = [fatherlinenumber, motherlinenumber]
             return (templinenumber, output)
         
+        start_time = time.time()
+        num_displayed_individuals = 0
         if maxlevel is None:
             maxlevel = MAX_GENERATIONS
         output = self.render_header() 
@@ -318,12 +334,17 @@ class Pedigree(HTMLPage):
         output += "<pre><div id='DivID1'>"
         _, recursiveoutput = render_recursive(targetid, -1, False, 0)
         output += recursiveoutput
-        output += "\n</div></pre>\n"
+        output += "\n</div></pre><BR>\n"
+        output += "Displayed " + str(num_displayed_individuals) + " individuals in "  + \
+            str(round(time.time() - start_time, 7)) + " seconds.<BR>\n"
         output += "<HR>\n"
         appeared_in_pedigree.clear()
         output += render_menu(targetid)
         output += render_script()
         ancestors_line_numbers.clear()
         output += self.render_footer()
+        self.log(str(datetime.datetime.now()) + " Pedigree of " + self.tree.indi[targetid].name.pretty_print() + \
+                " accessed by " + str(request.remote_addr) + " using " + str(request.user_agent) + " in " + \
+                str(round(time.time() - start_time, 7)) + " seconds.<BR>\n")
         return output
     

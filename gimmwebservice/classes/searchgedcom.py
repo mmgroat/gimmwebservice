@@ -5,6 +5,7 @@
 from classes.htmlpage import HTMLPage
 from flask import request
 import time
+import datetime
 
 class SearchGedcom(HTMLPage):
 
@@ -59,11 +60,14 @@ class SearchGedcom(HTMLPage):
             
             # Parrot search terms
             i = 0
+            findthis = ""
             output += "The genealogical database is now being search for <B>"            
             for term in terms:       
                 output += term + " " 
+                findthis += term + " "
                 i = i + 1
                 if i < len(terms):
+                    findthis += condition + " "
                     output += condition + " "
             output += "</B><P>The search will be case " + case + ".\n"
             
@@ -88,9 +92,9 @@ class SearchGedcom(HTMLPage):
             output += "<BR><A HREF=\"/search\">Perform another search.</A><BR><P>\n";
 
             output += "Time took was " + str(round(time.time() - time_start, 3)) + " seconds <BR>\n" # TODO: Put in log function later
-            # TODO Log function            
-            # Log("Database searched for name(s) " + $FindThis + " by " + \
-            #   ENV{"REMOTE_HOST"} + " using time " + str(round(time.time() - start_time))
+            self.log(str(datetime.datetime.now()) + " Database searched for " + findthis + \
+                " accessed by " + str(request.remote_addr) + " using " + str(request.user_agent) + " in " + \
+                str(round(time.time() - time_start, 7)) + " seconds.<BR>\n")
 
         output += "<BR><A HREF=\"/index\">Return to the master index</A><BR>\n"
         output += self.render_footer()

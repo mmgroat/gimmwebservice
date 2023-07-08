@@ -1,6 +1,9 @@
 # Class IndividualSheet
 # Original Author: Michael Groat
 # 5/27/2023
+import time
+import datetime
+from flask import Flask, request
 from  ordered_set import OrderedSet
 from classes.constants import (
     FACT_TYPES,
@@ -76,6 +79,8 @@ class IndividualSheet(HTMLPage):
             #    output +=  " | <a href=\"/gedcom/\"$focus&Name=$EncodeName&type=descendants>Extract GEDCOM</a>\n"
             output += "</B></CENTER>"
             return output
+
+        start_time = time.time()
 
         # Data structures and primatives
         superscriptindex = 0
@@ -171,5 +176,8 @@ class IndividualSheet(HTMLPage):
         output += "<HR>\n"
         output += render_menu()
         output += self.render_footer()
+        self.log(str(datetime.datetime.now()) + " Individual " + self.tree.indi[targetid].name.pretty_print() + \
+            " accessed by " + str(request.remote_addr) + " using " + str(request.user_agent) + " in " + \
+            str(round(time.time() - start_time, 10)) + " seconds.<BR>\n")
         return output
     
