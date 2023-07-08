@@ -30,21 +30,22 @@ class Pedigree(HTMLPage):
             output += "<FORM>Collaspe or expand all branches at select generation level: \n"
             output += "<SELECT name=\"tblofContents\" onChange=\"javascript:formHandler(this)\">\n"
             output += "<OPTION>Select Depth</OPTION>\n"
-            output += "<OPTION value=\"maxlevel=5\">5</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=10\">10</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=15\">15</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=20\">20</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=25\">25</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=30\">30</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=35\">35</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=40\">40</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=45\">45</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=50\">50</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=55\">55</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=60\">60</OPTION>\n";
-            output += "<OPTION value=\"maxlevel=200\">200</OPTION>\n";
+            output += "<OPTION value=\"5\">5</OPTION>\n";
+            output += "<OPTION value=\"10\">10</OPTION>\n";
+            output += "<OPTION value=\"15\">15</OPTION>\n";
+            output += "<OPTION value=\"20\">20</OPTION>\n";
+            output += "<OPTION value=\"25\">25</OPTION>\n";
+            output += "<OPTION value=\"30\">30</OPTION>\n";
+            output += "<OPTION value=\"35\">35</OPTION>\n";
+            output += "<OPTION value=\"40\">40</OPTION>\n";
+            output += "<OPTION value=\"45\">45</OPTION>\n";
+            output += "<OPTION value=\"50\">50</OPTION>\n";
+            output += "<OPTION value=\"55\">55</OPTION>\n";
+            output += "<OPTION value=\"60\">60</OPTION>\n";
+            output += "<OPTION value=\"200\">200</OPTION>\n";
             output += "</SELECT></FORM>\n";
             output += "</CENTER>\n";
+            # TODO: Add two buttons, collaspe and expand, change drop down to a slider
             return output
 
         def render_menu(targetid) -> str:
@@ -63,7 +64,7 @@ class Pedigree(HTMLPage):
             def build_ancestors_line_number_var() -> str:
                 output = ""
                 output += "<script type=\"text/javascript\" language=\"JAVASCRIPT\"> \n"
-                output += "  var ancestors_line_number={ "
+                output += "   var ancestors_line_number={ "
                 for key in ancestors_line_numbers:
                     if (ancestors_line_numbers[key][0] != 0 or ancestors_line_numbers[key][1] != 0):
                         output += str(key) + ": ["
@@ -75,11 +76,35 @@ class Pedigree(HTMLPage):
             output = ""
             output += build_ancestors_line_number_var()
             output += "   function formHandler(thisItem) {\n"
-            output += "      var URL = '/individual/" + str(targetid) + "/pedigree?' + thisItem.options[thisItem.selectedIndex].value; \n"
-            output += "      if(URL != \"\"){ window.location.href = URL; } \n"
+#           output += "       console.log(\"form data is \" + thisItem.options[thisItem.selectedIndex].value);\n"
+            output += "       traversebranches(" + str(mainperson_line_number) + ", 1, thisItem.options[thisItem.selectedIndex].value); \n" 
+#            output += "       var URL = '/individual/" + str(targetid) + "/pedigree?' + thisItem.options[thisItem.selectedIndex].value; \n"
+#            output += "      if(URL != \"\"){ window.location.href = URL; } \n"
+            output += "   }\n"
+            output += "   function traversebranches(line_num, level, leveltochange) {\n"
+            output += "      if (level == leveltochange) {\n"
+            output += "         hidebranches(line_num, 1, 1);\n"
+            output += "         return;\n"
+            output += "      }\n"
+#            output += "      if (level < leveltochange) {\n"
+#            output += "      "
+            output += "      if (line_num in ancestors_line_number) {\n"
+            output += "         var father_line_number = ancestors_line_number[line_num][0];\n"
+            output += "         if (father_line_number > 0) {\n"
+            output += "            traversebranches(father_line_number, level + 1, leveltochange);\n"
+            output += "         }\n"
+            output += "         var mother_line_number = ancestors_line_number[line_num][1];\n"
+            output += "         if (mother_line_number > 0) {\n"
+            output += "            traversebranches(mother_line_number, level + 1, leveltochange);\n"
+            output += "         }\n"
+            output += "      }\n"
             output += "   }\n"
             output += "   function hidebranches(line_num, main,closeorexpand = 0) {\n"
-            output += "      var x = document.getElementById(\"ButtonID\" + line_num ).innerHTML;\n"
+            output += "      var button = document.getElementById(\"ButtonID\" + line_num);\n"
+            output += "      if (button === null) {\n"
+            output += "          return;\n"
+            output += "      }\n"
+            output += "      var x = button.innerHTML;\n"
             output += "      if (main === 1) {\n"
             output += "         if (x != \"+\") { \n"
             output += "            document.getElementById(\"ButtonID\" + line_num ).innerHTML = \"+\";\n"
@@ -332,7 +357,7 @@ class Pedigree(HTMLPage):
         ancestors_line_numbers = dict()
         linenumber = 0
         output += "<pre><div id='DivID1'>"
-        _, recursiveoutput = render_recursive(targetid, -1, False, 0)
+        mainperson_line_number, recursiveoutput = render_recursive(targetid, -1, False, 0)
         output += recursiveoutput
         output += "\n</div></pre><BR>\n"
         output += "Displayed " + str(num_displayed_individuals) + " individuals in "  + \
