@@ -151,7 +151,7 @@ sys.stdout.flush()
 subindexoutput = []
 for x in range(tree.magicnum):
     sys.stdout.write("\b\b\b\b\b\b\b\b\b\b\b\b\b\b")
-    sys.stdout.write(str(x) + "/" + str(tree.magicnum))
+    sys.stdout.write(str(x+1) + "/" + str(tree.magicnum))
     sys.stdout.flush()
     subindexoutput.append(masterindex.render_submaster(x))
 sys.stdout.write("\n")
