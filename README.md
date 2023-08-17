@@ -53,9 +53,9 @@ Currenlty the only working URL is http://127.0.0.1:5000/individual/1/pedigree (T
 
 Webservice Endpoints:
 ==========
-(Main index)
+(Main index):
 
-http://127.0.0.1:5000/ 
+http://127.0.0.1:5000/
 
 http://127.0.0.1:5000/individual
 
@@ -63,25 +63,26 @@ http://127.0.0.1:5000/individuals
 
 http://127.0.0.1:5000/index
 
-
-
-(Pedigree chart of individual {id})
+(Pedigree chart of individual {id}):
 
 http://127.0.0.1:5000/individual/{id}/pedigree
 
-
-(Individual sheet of individual {id})
+(Individual sheet of individual {id}):
 
 http://127.0.0.1:5000/individual/{id}
 
-(Desendency chart of individual {id})
+(Desendency chart of individual {id}):
 
 http://127.0.0.1:5000/individual/{id}/descendents
+
+(Images of individual {id}):
+
+http://127.0.0.1:5000/individual/{id}/images
 
 Copyrights:
 =======
 * Copyrighted material from the Indexed Gedcom Method (IGM) (TODO - put in the names of the IGM copyright holders) is the indent subroutine on the pedigree chart, and the look of the rendered html pages
-* GIMM copyrighted 2023 by Michael Groat and licensed under a GNU GPL.
+* GIMM copyrighted 2023 by Michael M. Groat and licensed under a GNU GPL.
 
 
 How to use Linekio/getmyancestors
