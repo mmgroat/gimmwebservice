@@ -27,7 +27,7 @@ class Pedigree(HTMLPage):
         def render_collaspe_form() -> str:
             #if (AllowCollaspeAtGeneration):
             output = "<CENTER>\n"
-            output += "<FORM>You can click on individual branches to collaspe or expand.<BR>To collaspe or expand all branches at select generation level:<BR> \n"
+            output += "<FORM>You can click on individual branches to collaspe or expand them.<BR>To collaspe or expand all branches at a select generation level use slider and buttons:<BR> \n"
             output += "<INPUT TYPE=\"range\" MIN=\"1\" MAX=\"300\" VALUE=\"150\" CLASS=\"slider\" ID=\"myRange\">\n"
             output += "<p>Value: <span id=\"demo\"></span></p>\n"
             output += "<INPUT TYPE=\"button\" NAME=\"action\" VALUE=\"Expand\" onClick=\"javascript:formHandler(this, 1)\"/>\n"

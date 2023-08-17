@@ -26,6 +26,7 @@ Future Work
 * Need to turn it into a package.
 * See if IIS needs to be installed, or apache
 * The project is maintained at https://github.com/mmgroat/gimmwebservice. Visit here for the latest version and more information.
+* now batting next (images support)
 
 Support
 =======
