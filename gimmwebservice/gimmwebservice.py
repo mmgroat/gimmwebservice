@@ -153,7 +153,9 @@ for x in range(tree.magicnum):
     sys.stdout.write("\b\b\b\b\b\b\b\b\b\b\b\b\b\b")
     sys.stdout.write(str(x+1) + "/" + str(tree.magicnum))
     sys.stdout.flush()
-    subindexoutput.append(masterindex.render_submaster(x))
+    output = masterindex.render_submaster(x)
+    if len(output) > 0:
+        subindexoutput.append(output)
 sys.stdout.write("\n")
 #TODO: Question - Do we want to remove birth and death information for living individuals here?
 # I've had people contact me in the past requesting this info not be posted.

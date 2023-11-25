@@ -28,21 +28,29 @@ class MasterIndex(HTMLPage):
         output += "<ul>\n"
         individuallist = list(self.tree.sorted_individuals.items())
         for i in range(self.tree.magicnum):
-            startperson = individuallist[self.tree.magicnum * i]
-            if self.tree.magicnum * i + self.tree.magicnum - 1 >= len(individuallist):
+            startpersonindex = self.tree.magicnum * i
+            startperson = individuallist[startpersonindex]
+            endpersonindex = startpersonindex + self.tree.magicnum - 1
+            if endpersonindex >= len(individuallist):
                 endperson = individuallist[len(individuallist) - 1]
             else: 
-                endperson = individuallist[self.tree.magicnum * i + self.tree.magicnum - 1]
+                endperson = individuallist[endpersonindex]
             output += "<li><A HREF=\"/index/" + str(i) + "\"><B>" + \
                 startperson[1].name.surname + ", " + \
                 startperson[1].name.given + " -- " + \
                 endperson[1].name.surname + ", " + \
                 endperson[1].name.given + "</B></A>\n"
+            if endpersonindex >= len(individuallist):
+                break
         output += "</ul></ul>\n"        
         output += self.render_footer()
         return output
     
     def render_submaster(self, submasternum) -> str:
+        startpersonindex = (self.tree.magicnum * submasternum)
+        if startpersonindex >= len(self.tree.sorted_individuals_list):
+            return ""
+        endpersonindex = (self.tree.magicnum * submasternum) + self.tree.magicnum - 1
         output = self.render_header()
         output += "<CENTER><H2>Sub Index</H2></CENTER><HR>\n"
         output += "This genealogical database can be searched several ways:<br>\n"
@@ -50,7 +58,6 @@ class MasterIndex(HTMLPage):
         output += self.render_links()
         output += "<li>View information for the following invidivuals:<br>\n"
         output += "<ul>\n"
-        startpersonindex = (self.tree.magicnum * submasternum)
         endpersonindex = (self.tree.magicnum * submasternum) + self.tree.magicnum - 1 
         if startpersonindex == 0:
             previous_last_name = None
