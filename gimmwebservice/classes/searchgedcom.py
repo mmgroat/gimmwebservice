@@ -2,7 +2,7 @@
 # Original Author: Michael Groat
 # 6/29/2023
 
-from classes.htmlpage import HTMLPage
+from .htmlpage import HTMLPage
 from flask import request
 import time
 import datetime

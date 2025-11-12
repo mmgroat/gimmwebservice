@@ -7,7 +7,9 @@
 # global imports
 # from __future__ import print_function
 # import re
+
 import sys
+
 # from urllib.parse import unquote
 # import getpass
 # import asyncio
@@ -33,6 +35,11 @@ from classes.masterindex import MasterIndex
 from classes.searchgedcom import SearchGedcom
 from classes.surnames import Surnames
 from classes.log import Log
+from classes.constants import (
+    FACT_TYPES,
+    MAX_GENERATIONS,
+)
+
 
 app = Flask(__name__)
 debug = True
@@ -54,6 +61,23 @@ parser.add_argument(
     default=False,
     help="Contact Email",
 )
+parser.add_argument(
+    "-run", 
+    "--run", 
+    metavar="<STR>", 
+    type=str, 
+    default=False,
+    help="Contact Email",
+)
+# parser.add_argument(
+#    "-e", 
+#    "--email", 
+#    metavar="<STR>", 
+#    type=str, 
+#    default=False,
+#    help="Contact Email",
+#)
+
 try:
     parser.add_argument(
         "-g",
@@ -72,26 +96,30 @@ except TypeError as e:
     sys.exit(2)
 
 # extract arguments from the command line
-try:
-    parser.error = parser.exit
-    args = parser.parse_args()
-except SystemExit as e:
-    parser.print_help(file=sys.stderr)
-    if debug:
-        print("An exception occurred:", e)
-        traceback.print_exc()
-    sys.exit(2)
+#try:
+#    parser.error = parser.exit
+#    args = parser.parse_args()
+#except SystemExit as e:
+#    parser.print_help(file=sys.stderr)
+##    if debug:
+ #       print("An exception occurred:", e)
+ #       traceback.print_exc()
+ #   sys.exit(2)
 
 # Load GedCom from file in a NonFS tree (doesn't assume FIDs exist)
-if not args.gedcom_input_file:
-    sys.stderr.write("A GEDCOM file is required to run this webservice\n")
-    sys.exit(2)
+#if not args.gedcom_input_file:
+#    sys.stderr.write("A GEDCOM file is required to run this webservice\n")
+#    sys.exit(2)
     
 tree = Tree()
-ged = Gedcom(args.gedcom_input_file, tree)
-tree.lastmodifiedtime = datetime.fromtimestamp(os.path.getmtime(args.gedcom_input_file.name)).strftime('%B %d, %Y %H:%M:%S')
-tree.contactemail = args.email
-tree.gimmversion = "Version 0.0.2 (<A HREF=\"http://github.com/mmgroat/gimmwebservice\">Program Information</A>)"
+gedcom_file_name = "GroatFamily2_2025-11-10.ged"
+gedcom_input_file = open(gedcom_file_name,"r", encoding="UTF-8-SIG")
+#ged = Gedcom(args.gedcom_input_file, tree)
+ged = Gedcom(gedcom_input_file, tree)
+tree.lastmodifiedtime = datetime.fromtimestamp(os.path.getmtime(gedcom_file_name)).strftime('%B %d, %Y %H:%M:%S')
+#tree.contactemail = args.email
+tree.contactemail = "mmgroat@gmail.com"
+tree.gimmversion = "Version 1.0.3 (<A HREF=\"http://github.com/mmgroat/gimmwebservice\">Program Information</A>)"
 fam_counter = 0
 print("Copying Gedcom results to tree data structure")
 sys.stdout.flush()
@@ -190,7 +218,7 @@ def get_individual_sheet(indi_num):
 def get_pedigree(indi_num):
    maxlevel = request.args.get('maxlevel')
    if maxlevel is None:
-       maxlevel = 198 # 200 shows on chart
+       maxlevel = MAX_GENERATIONS
    else:
        maxlevel = int(maxlevel) - 2
        if maxlevel < -1:
@@ -202,7 +230,7 @@ def get_pedigree(indi_num):
 def get_descendents(indi_num):
    maxlevel = request.args.get('maxlevel')
    if maxlevel is None:
-       maxlevel = 198 # 200 shows on chart
+       maxlevel = MAX_GENERATIONS
    else:
        maxlevel = int(maxlevel) - 2
        if maxlevel < -1:
@@ -274,4 +302,4 @@ def get_guestbook():
 # start the webserver
 if __name__ == "__main__":
     app.debug = True
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=5010)

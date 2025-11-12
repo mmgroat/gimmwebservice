@@ -3,7 +3,7 @@
 # Subject to change: see https://www.familysearch.org/developers/docs/api/tree/Persons_resource
 MAX_PERSONS = 200
 
-MAX_GENERATIONS = 200
+MAX_GENERATIONS = 20
 
 FACT_TAGS = {
     "http://gedcomx.org/Birth": "BIRT",

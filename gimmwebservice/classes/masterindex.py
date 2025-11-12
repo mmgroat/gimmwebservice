@@ -2,7 +2,7 @@
 # Original Author: Michael Groat
 # 6/11/2023
 
-from classes.htmlpage import HTMLPage
+from .htmlpage import HTMLPage
 import math
 import sys
 

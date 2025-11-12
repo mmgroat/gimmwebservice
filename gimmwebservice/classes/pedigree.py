@@ -5,8 +5,8 @@
 import time
 import datetime
 from flask import Flask, request
-from classes.htmlpage import HTMLPage
-from classes.constants import (
+from .htmlpage import HTMLPage
+from .constants import (
     FACT_TYPES,
     MAX_GENERATIONS,
 )
@@ -53,6 +53,8 @@ class Pedigree(HTMLPage):
             #    output +=  " | <a href=\"/gedcom/\"?Database=$DB&Subject=$focus&Name=$EncodeName&type=descendants>Extract GEDCOM</a>\n"
             output += "</B></CENTER><BR>"
             output += render_collaspe_form()
+            output += "<CENTER>Currently " + str(maxlevel) + " generations are shown. To reload page with 200 generations <A HREF=\"/individual/" + str(targetid) + "/pedigree?maxlevel=202\">click here</A>\n"
+            output += "<BR>Note, I found that for 150 or more generations, only the Firefox browser seems to handle it.\n</CENTER><BR>"
             return output
             
         def render_script() -> str:

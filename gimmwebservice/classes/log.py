@@ -2,7 +2,7 @@
 # Original Author: Michael Groat
 # 7/1/2023
 
-from classes.htmlpage import HTMLPage
+from .htmlpage import HTMLPage
 from filelock import Timeout, FileLock
 
 class Log(HTMLPage):

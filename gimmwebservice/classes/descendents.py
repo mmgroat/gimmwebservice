@@ -7,11 +7,11 @@
 import time
 import datetime
 from flask import Flask, request
-from classes.constants import (
+from .constants import (
     FACT_TYPES,
     MAX_GENERATIONS,
 )
-from classes.htmlpage import HTMLPage
+from .htmlpage import HTMLPage
 
 class Descendents(HTMLPage):
 

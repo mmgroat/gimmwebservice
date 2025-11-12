@@ -1,6 +1,6 @@
 # mergemyancestors classes
 #from gimmwebservices.classes.tree import (
-from classes.tree import (
+from .tree import (
     Indi,
     Fact,
     Fam,
@@ -11,7 +11,7 @@ from classes.tree import (
     Source,
 )
 #from gimmwebservices.classes.constants import FACT_TYPES, ORDINANCES
-from classes.constants import FACT_TYPES, ORDINANCES
+from .constants import FACT_TYPES, ORDINANCES
 
 class Gedcom:
     """Parse a GEDCOM file into a Tree"""

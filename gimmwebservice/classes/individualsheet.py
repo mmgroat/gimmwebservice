@@ -5,11 +5,11 @@ import time
 import datetime
 from flask import Flask, request
 from  ordered_set import OrderedSet
-from classes.constants import (
+from .constants import (
     FACT_TYPES,
 )
 
-from classes.htmlpage import HTMLPage
+from .htmlpage import HTMLPage
 
 class IndividualSheet(HTMLPage):
 

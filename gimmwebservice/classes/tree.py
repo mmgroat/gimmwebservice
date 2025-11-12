@@ -11,7 +11,7 @@ import babelfish
 
 # local imports
 #import printverylargetextpedigrees
-from classes.constants import (
+from .constants import (
     MAX_PERSONS,
     FACT_EVEN,
     FACT_TAGS,
