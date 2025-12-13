@@ -1,12 +1,8 @@
 # GEDCOM in Memory Method (GIMM) Web Service
 
-=======
-
 _GIMMwebservice_  A GEDCOM to WEB server that specializes in fast and efficient collapsible pedigree and descendency text charts for 50k+ individuals.  Written in Python, and using Flask, it parses large (100k+ individuals) GEDCOMs into primary memory (RAM), alleviating disk seeks in previous methods such as IGM, rendering web pages faster. 
 
 ## Advantages of GIMM
-
-=======
 
 * The GEDCOM file is parsed into RAM memory when the web service loads, eliminating the need to access the disk multiple times for each web page request. For pedigree charts with tens of thousands of people, pages load quicker. This is differnt, in spirit, to IGM (Indexed GECOM Method), which heavily relies on disk usage from parsing a GEDCOM from web page requests.
 * This program can be used with the http://github.com/Linekio/getmyancestors project, which crawls and pulls a GEDCOMs from the FamilySearch.org web site. This GIMM webservice can then display these downloaded GEDCOMs. 
@@ -17,8 +13,6 @@ _GIMMwebservice_  A GEDCOM to WEB server that specializes in fast and efficient 
 
 ## Usage
 
-=======
-
 * python3 gimmwebservice.py -g ../../personaldata/mygedcom.ged -e CONTACTEMAIL
 * You may need to install IIS, python, and python libraries (for example pip install flask). In the future I entend to package this repo, elivating this.
 * This script requires python3 and the modules indicated in the requirements.txt file.
@@ -26,8 +20,6 @@ _GIMMwebservice_  A GEDCOM to WEB server that specializes in fast and efficient 
 * Point your browser to http://127.0.0.1:5000/. The port number is hard coded in the source and can be changed.
 
 ## Future Work
-
-=======
 
 * This program is in the development phase; it is currently a work in progress, and bugs might be present. Features will be added on request. It is provided as is.
 * It needs to turn it into a package.
@@ -37,13 +29,9 @@ _GIMMwebservice_  A GEDCOM to WEB server that specializes in fast and efficient 
 
 ## Support
 
-=======
-
 * Submit questions, suggestions, or feature requests by opening an issue at https://github.com/mmgroat/gimmwebservice/issues.
 
 ## Webservice Endpoints:
-
-==========
 
 ### Main index:
 * http://127.0.0.1:5000/
@@ -61,8 +49,6 @@ _GIMMwebservice_  A GEDCOM to WEB server that specializes in fast and efficient 
 * http://127.0.0.1:5000/individual/{id}/descendents
 
 ## Copyrights:
-
-=======
 
 * Copyrighted material from the Indexed Gedcom Method (TODO - put in the names of the IGM copyright holders) is in the indent subroutine on the pedigree chart, and the look of the rendered html pages.
 * This project is forked from Linekio/getmyancestors. Some underlying data structures used in memory utilitize this copyrighted material.
