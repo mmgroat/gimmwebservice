@@ -1,6 +1,6 @@
 # GEDCOM in Memory Method (GIMM) Web Service
 
-_GIMMwebservice_  A GEDCOM to WEB server that specializes in fast and efficient collapsible pedigree and descendency text charts for 50k+ individuals.  Written in Python, and using Flask, it parses large (100k+ individuals) GEDCOMs into primary memory (RAM), alleviating disk seeks in previous methods such as IGM, rendering web pages faster. 
+GIMMWebservice is a GEDCOM to WEB server that specializes in fast and efficient collapsible pedigree and descendency text charts for 50k+ individuals.  Written in Python, and using Flask, it parses large (100k+ individuals) GEDCOMs into primary memory (RAM), alleviating disk seeks in previous methods such as IGM, rendering web pages faster. 
 
 ## Advantages of GIMM
 
